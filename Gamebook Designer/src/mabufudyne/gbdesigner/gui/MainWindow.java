@@ -1,4 +1,4 @@
-package mabufudyne.gbcreator.gui;
+package mabufudyne.gbdesigner.gui;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -64,6 +64,9 @@ public class MainWindow {
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
 		tItemNew.setText("New");
 		
+		ToolItem tItemQuickSave = new ToolItem(mainToolBar, SWT.NONE);
+		tItemQuickSave.setText("Save");
+		
 		SashForm sashMain = new SashForm(shell, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
@@ -99,7 +102,14 @@ public class MainWindow {
 		listChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
-		Composite cOverview = new Composite(sashMain, SWT.NONE);
+		Composite cViews = new Composite(sashMain, SWT.NONE);
+		GridLayout gl_cViews = new GridLayout(2, false);
+		gl_cViews.marginHeight = 0;
+		gl_cViews.horizontalSpacing = 0;
+		cViews.setLayout(gl_cViews);
+		
+		Composite cOverview = new Composite(cViews, SWT.NONE);
+		cOverview.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		cOverview.setLayout(new GridLayout(1, false));
 		
 		Label lblOverview = new Label(cOverview, SWT.NONE);
@@ -108,6 +118,15 @@ public class MainWindow {
 		
 		List listStoryPieces = new List(cOverview, SWT.BORDER);
 		listStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		
+		ToolItem tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemAddStoryPiece.setText("+");
+		
+		ToolItem tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRemoveStoryPiece.setText("-");
 		sashMain.setWeights(new int[] {1, 1});
 
 	}
