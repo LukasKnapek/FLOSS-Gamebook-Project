@@ -10,24 +10,45 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ToolItem;
+
+import mabufudyne.gbdesigner.core.EventHandler;
+import mabufudyne.gbdesigner.core.StoryPiece;
+
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TableColumn;
 
 public class MainWindow {
 
+	private static MainWindow instance = new MainWindow();
 	protected Shell shell;
 	private Text textTitle;
 	private Text textStory;
+	private Table tableStoryPieces;
+	private Table tableChoices;
+	private int itemNumber;
 
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
+	
+	protected MainWindow() {
+		this.itemNumber = 1;
+	}
+	
+	public static MainWindow getInstance() {
+		return instance;
+	}
+	
 	public static void main(String[] args) {
 		try {
-			MainWindow window = new MainWindow();
-			window.open();
+			MainWindow.getInstance().open();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,6 +73,7 @@ public class MainWindow {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
+		
 		shell = new Shell();
 		shell.setMinimumSize(new Point(700, 550));
 		shell.setSize(450, 300);
@@ -98,8 +120,10 @@ public class MainWindow {
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		lblNewLabel.setText("Choices");
 		
-		List listChoices = new List(cChoices, SWT.BORDER);
-		listChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		tableChoices.setHeaderVisible(true);
+		tableChoices.setLinesVisible(true);
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
 		Composite cViews = new Composite(sashMain, SWT.NONE);
@@ -116,18 +140,57 @@ public class MainWindow {
 		lblOverview.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 		lblOverview.setText("Overview");
 		
-		List listStoryPieces = new List(cOverview, SWT.BORDER);
-		listStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		tableStoryPieces = new Table(cOverview, SWT.BORDER | SWT.FULL_SELECTION);
+		tableStoryPieces.setHeaderVisible(true);
+		tableStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		tableStoryPieces.setLinesVisible(true);
+		
+		TableColumn tblclmnNewColumn = new TableColumn(tableStoryPieces, SWT.CENTER);
+		tblclmnNewColumn.setWidth(30);
+		tblclmnNewColumn.setText("#");
+		
+		TableColumn tblclmnStoryPieceTitle = new TableColumn(tableStoryPieces, SWT.CENTER);
+		tblclmnStoryPieceTitle.setWidth(100);
+		tblclmnStoryPieceTitle.setText("Title");
 		
 		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		
 		ToolItem tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.createNewStoryPiece();
+			}
+		});
+		tItemAddStoryPiece.setToolTipText("Create a new Story Piece");
 		tItemAddStoryPiece.setText("+");
 		
 		ToolItem tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
 		tItemRemoveStoryPiece.setText("-");
-		sashMain.setWeights(new int[] {1, 1});
+		sashMain.setWeights(new int[] {2, 1});
 
 	}
+
+	public void displayStoryPiece(StoryPiece sp) {
+		TableItem item = new TableItem(tableStoryPieces, SWT.CENTER);
+		item.setData(sp);
+		// Column 0 - order, column 1 - StoryPiece title
+		item.setText(0, String.valueOf(getItemNumber()));
+		item.setText(1, sp.getTitle());
+		
+		incrementItemNumber();
+	}
+	
+	private int getItemNumber() {
+		return itemNumber;
+	}
+	
+	private void incrementItemNumber() {
+		itemNumber++;
+	}
+
+
 }
+
+
