@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.StoryPiece;
+import mabufudyne.gbdesigner.core.StoryPieceManager;
 
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Text;
@@ -146,6 +147,12 @@ public class MainWindow {
 		tableStoryPieces.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
+				String title = textTitle.getText();
+				String story = textStory.getText();
+				
+				EventHandler.saveStoryPieceChanges(title, story);
+				EventHandler.changeActiveStoryPiece(activatedSP);
 				EventHandler.performUICheck();
 			}
 		});
@@ -168,6 +175,9 @@ public class MainWindow {
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				String title = textTitle.getText();
+				String story = textStory.getText();
+				EventHandler.saveStoryPieceChanges(title, story);
 				EventHandler.createNewStoryPiece();
 			}
 		});
@@ -191,7 +201,7 @@ public class MainWindow {
 
 	}
 
-	public void displayStoryPiece(StoryPiece sp) {
+	public void displayStoryPieceItem(StoryPiece sp) {
 		TableItem item = new TableItem(tableStoryPieces, SWT.CENTER);
 		item.setData(sp);
 		// Column 0 - order, column 1 - StoryPiece title
@@ -199,6 +209,11 @@ public class MainWindow {
 		item.setText(1, sp.getTitle());
 		
 		incrementItemNumber();
+	}
+	
+	public void displayStoryPieceContents(StoryPiece sp) {
+		textTitle.setText(sp.getTitle());
+		textStory.setText(sp.getStory());
 	}
 	
 	private int getItemNumber() {
@@ -247,6 +262,38 @@ public class MainWindow {
 			tItemRemoveStoryPiece.setEnabled(false);
 		}
 	}
+
+	/** Highlights the TableItem of the currently active StoryPiece */
+	public void highlightActiveStoryPiece() {
+		StoryPiece activeSP = StoryPieceManager.getActiveStoryPiece();
+		for (TableItem item : tableStoryPieces.getItems()) {
+			if (item.getData() == activeSP) {
+				tableStoryPieces.select(tableStoryPieces.indexOf(item));
+			}
+		}
+	}
+
+	public void updateStoryPieceItemTitle(StoryPiece sp) {
+		for (TableItem item : tableStoryPieces.getItems())
+			if (item.getData() == sp) {
+				item.setText(1, sp.getTitle());
+			}
+		
+	}
+
+	public void clearFields() {
+		textTitle.setText("");
+		textStory.setText("");
+	}
+
+
+
+
+
+
+
+
+
 }
 
 
