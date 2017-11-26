@@ -31,6 +31,8 @@ public class MainWindow {
 	private Text textStory;
 	private Table tableStoryPieces;
 	private Table tableChoices;
+	private ToolItem tItemAddStoryPiece;
+	private ToolItem tItemRemoveStoryPiece;
 	private int itemNumber;
 
 	/**
@@ -141,6 +143,12 @@ public class MainWindow {
 		lblOverview.setText("Overview");
 		
 		tableStoryPieces = new Table(cOverview, SWT.BORDER | SWT.FULL_SELECTION);
+		tableStoryPieces.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.performUICheck();
+			}
+		});
 		tableStoryPieces.setHeaderVisible(true);
 		tableStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tableStoryPieces.setLinesVisible(true);
@@ -156,7 +164,7 @@ public class MainWindow {
 		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		
-		ToolItem tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -166,9 +174,20 @@ public class MainWindow {
 		tItemAddStoryPiece.setToolTipText("Create a new Story Piece");
 		tItemAddStoryPiece.setText("+");
 		
-		ToolItem tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRemoveStoryPiece.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem item = getSelectedTableItem(tableStoryPieces);
+				if (item.getData() instanceof StoryPiece) {
+					EventHandler.deleteStoryPiece((StoryPiece) item.getData());
+				}
+			}
+		});
 		tItemRemoveStoryPiece.setText("-");
 		sashMain.setWeights(new int[] {2, 1});
+		
+		buttonCheck();
 
 	}
 
@@ -189,8 +208,45 @@ public class MainWindow {
 	private void incrementItemNumber() {
 		itemNumber++;
 	}
+	
+	private void decrementItemNumber() {
+		itemNumber--;
+	}
 
-
+	private TableItem getSelectedTableItem(Table tableSource) {
+		return tableSource.getSelection()[0];
+	}
+	
+	/** Reorders StoryPiece TableItems in tableStoryPieces. 
+	 * @argument sp The StoryPiece which has been removed
+	 */
+	public void reorderStoryPieces(StoryPiece sp) {
+		int deletedItemNumber = 1;
+		for (TableItem item : tableStoryPieces.getItems()) {
+			if (item.getData() == sp) {
+				deletedItemNumber = Integer.valueOf(item.getText(0));
+				tableStoryPieces.remove(tableStoryPieces.indexOf(item));
+				decrementItemNumber();
+			}
+		}
+		
+		for (TableItem item : tableStoryPieces.getItems()) {
+			int tItemNumber = Integer.valueOf(item.getText(0));
+			if (tItemNumber > deletedItemNumber) {
+				tItemNumber--;
+				item.setText(0,String.valueOf(tItemNumber));
+			}
+		}
+	}
+	
+	public void buttonCheck() {
+		if (tableStoryPieces.getItemCount() > 0 && tableStoryPieces.getSelection()[0] != null) {
+			tItemRemoveStoryPiece.setEnabled(true);
+		}
+		else {
+			tItemRemoveStoryPiece.setEnabled(false);
+		}
+	}
 }
 
 

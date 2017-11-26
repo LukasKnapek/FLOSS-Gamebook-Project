@@ -11,4 +11,8 @@ public class StoryPieceManager {
 		allStoryPieces.add(sp);
 		return sp;
 	}
+	
+	public static void removeStoryPiece(StoryPiece sp) {
+		allStoryPieces.remove(sp);
+	}
 }
