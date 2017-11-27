@@ -13,6 +13,7 @@
 	<classpathentry kind="lib" path="/usr/lib/eclipse/plugins/org.eclipse.ui.workbench_3.110.1.v20170915-1447.jar" sourcepath="/usr/share/eclipse/droplets/eclipse-sdk/eclipse/plugins/org.eclipse.ui.workbench.source_3.110.1.v20170915-1447.jar"/>
 	<classpathentry kind="lib" path="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar" sourcepath="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar"/>
 	<classpathentry kind="lib" path="/usr/lib/eclipse/plugins/org.eclipse.ui.forms_3.7.101.v20170915-1447.jar" sourcepath="/usr/share/eclipse/droplets/eclipse-sdk/eclipse/plugins/org.eclipse.ui.forms.source_3.7.101.v20170915-1447.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.linux64"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.win32"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

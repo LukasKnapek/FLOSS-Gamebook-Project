@@ -111,9 +111,10 @@ public class MainWindow {
 		cStory.setLayout(new GridLayout(1, false));
 		
 		Label lblStory = new Label(cStory, SWT.NONE);
+		lblStory.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		lblStory.setText("Story");
 		
-		textStory = new Text(cStory, SWT.BORDER | SWT.MULTI);
+		textStory = new Text(cStory, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
 		textStory.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		Composite cChoices = new Composite(sashFields, SWT.NONE);

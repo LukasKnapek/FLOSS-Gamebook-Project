@@ -14,7 +14,7 @@ hs_err_pid*
 .metadata
 bin/
 tmp/
-org.eclipse.swt/
+org.eclipse.swt*/
 *.tmp
 *.bak
 *.swp

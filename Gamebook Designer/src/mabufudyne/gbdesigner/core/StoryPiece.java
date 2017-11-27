@@ -21,6 +21,7 @@ public class StoryPiece {
 	/* Getters and Setters */
 	
 	public UUID getStoryPieceID() {
+		
 		return storyPieceID;
 	}
 
