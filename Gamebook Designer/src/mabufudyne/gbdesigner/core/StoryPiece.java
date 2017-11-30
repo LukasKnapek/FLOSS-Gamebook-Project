@@ -1,13 +1,14 @@
 package mabufudyne.gbdesigner.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class StoryPiece {
 	private UUID storyPieceID;
 	private String title;
 	private String story;
-	private ArrayList<StoryPiece> choices;
+	private ArrayList<UUID> choices;
 	
 	/* Constructors */
 	
@@ -15,15 +16,19 @@ public class StoryPiece {
 		this.storyPieceID = UUID.randomUUID();
 		this.title = "Untitled";
 		this.story = "";
-		this.choices = new ArrayList<StoryPiece>();
+		this.choices = new ArrayList<UUID>();
 	}
 
 	/* Getters and Setters */
 	
-	public UUID getStoryPieceID() {
-		
+	public UUID getID() {
 		return storyPieceID;
 	}
+	
+	public List<UUID> getChoices() {
+		return choices;
+	}
+	
 
 	public String getTitle() {
 		return title;
@@ -41,6 +46,7 @@ public class StoryPiece {
 		this.story = story;
 	}
 	
-	
-	
+	public void addChoice(StoryPiece sp) {
+		this.choices.add(sp.getID());
+	}
 }

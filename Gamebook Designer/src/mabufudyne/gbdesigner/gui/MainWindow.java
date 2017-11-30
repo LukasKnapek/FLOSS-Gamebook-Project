@@ -5,6 +5,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+
+import java.util.UUID;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
@@ -34,6 +37,8 @@ public class MainWindow {
 	private Table tableChoices;
 	private ToolItem tItemAddStoryPiece;
 	private ToolItem tItemRemoveStoryPiece;
+	private ToolItem tItemAddChoice;
+	private ToolItem tItemRemoveChoice;
 	private int itemNumber;
 
 	/**
@@ -118,16 +123,41 @@ public class MainWindow {
 		textStory.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		Composite cChoices = new Composite(sashFields, SWT.NONE);
-		cChoices.setLayout(new GridLayout(1, false));
+		cChoices.setLayout(new GridLayout(2, false));
 		
 		Label lblNewLabel = new Label(cChoices, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		lblNewLabel.setText("Choices");
+		new Label(cChoices, SWT.NONE);
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
 		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tableChoices.setHeaderVisible(true);
 		tableChoices.setLinesVisible(true);
+		
+		TableColumn tblclmnChoiceNumber = new TableColumn(tableChoices, SWT.CENTER);
+		tblclmnChoiceNumber.setWidth(30);
+		tblclmnChoiceNumber.setText("#");
+		
+		TableColumn tblclmnChoiceTitle = new TableColumn(tableChoices, SWT.NONE);
+		tblclmnChoiceTitle.setWidth(100);
+		tblclmnChoiceTitle.setText("StoryPiece");
+		
+		ToolBar choiceToolBar = new ToolBar(cChoices, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		
+		tItemAddChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemAddChoice.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.displayChoiceSelectionWindow();
+				
+			}
+		});
+		tItemAddChoice.setText("+");
+		
+		tItemRemoveChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemRemoveChoice.setText("-");
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
 		Composite cViews = new Composite(sashMain, SWT.NONE);
@@ -161,9 +191,9 @@ public class MainWindow {
 		tableStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tableStoryPieces.setLinesVisible(true);
 		
-		TableColumn tblclmnNewColumn = new TableColumn(tableStoryPieces, SWT.CENTER);
-		tblclmnNewColumn.setWidth(30);
-		tblclmnNewColumn.setText("#");
+		TableColumn tblclmnSPNumber = new TableColumn(tableStoryPieces, SWT.CENTER);
+		tblclmnSPNumber.setWidth(30);
+		tblclmnSPNumber.setText("#");
 		
 		TableColumn tblclmnStoryPieceTitle = new TableColumn(tableStoryPieces, SWT.CENTER);
 		tblclmnStoryPieceTitle.setWidth(100);
@@ -179,7 +209,7 @@ public class MainWindow {
 				String title = textTitle.getText();
 				String story = textStory.getText();
 				EventHandler.saveStoryPieceChanges(title, story);
-				EventHandler.createNewStoryPiece();
+				EventHandler.createNewStoryPieceAndActivate();
 			}
 		});
 		tItemAddStoryPiece.setToolTipText("Create a new Story Piece");
@@ -202,19 +232,31 @@ public class MainWindow {
 
 	}
 
-	public void displayStoryPieceItem(StoryPiece sp) {
+	public void displayStoryPieceItem(StoryPiece displayedSP) {
 		TableItem item = new TableItem(tableStoryPieces, SWT.CENTER);
-		item.setData(sp);
+		item.setData(displayedSP);
 		// Column 0 - order, column 1 - StoryPiece title
 		item.setText(0, String.valueOf(getItemNumber()));
-		item.setText(1, sp.getTitle());
-		
+		item.setText(1, displayedSP.getTitle());
 		incrementItemNumber();
 	}
 	
-	public void displayStoryPieceContents(StoryPiece sp) {
-		textTitle.setText(sp.getTitle());
-		textStory.setText(sp.getStory());
+	public void displayStoryPieceContents(StoryPiece displayedSP) {
+		TableItem[] spItems = getStoryPieceTableItems();
+
+		textTitle.setText(displayedSP.getTitle());
+		textStory.setText(displayedSP.getStory());
+		
+		tableChoices.removeAll();
+		for (TableItem spItem : spItems) {
+			StoryPiece sp = (StoryPiece) spItem.getData();
+			if (displayedSP.getChoices().contains(sp.getID())) {
+				TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
+				choiceItem.setData(sp);
+				choiceItem.setText(0, spItem.getText(0));
+				choiceItem.setText(1, spItem.getText(1));
+			}
+		}
 	}
 	
 	private int getItemNumber() {
@@ -256,12 +298,22 @@ public class MainWindow {
 	}
 	
 	public void buttonCheck() {
-		if (tableStoryPieces.getItemCount() > 0 && tableStoryPieces.getSelection()[0] != null) {
+		if (tableStoryPieces.getItemCount() > 0 && tableStoryPieces.getSelection().length != 0) {
 			tItemRemoveStoryPiece.setEnabled(true);
+			tItemAddChoice.setEnabled(true);
 		}
 		else {
 			tItemRemoveStoryPiece.setEnabled(false);
+			tItemAddChoice.setEnabled(false);
 		}
+		
+		if (tableChoices.getItemCount() > 0 && tableChoices.getSelection().length != 0) {
+			tItemRemoveChoice.setEnabled(true);
+		}
+		else {
+			tItemRemoveChoice.setEnabled(false);
+		}
+		
 	}
 
 	/** Highlights the TableItem of the currently active StoryPiece */
@@ -285,6 +337,10 @@ public class MainWindow {
 	public void clearFields() {
 		textTitle.setText("");
 		textStory.setText("");
+	}
+	
+	public TableItem[] getStoryPieceTableItems() {
+		return tableStoryPieces.getItems();
 	}
 
 

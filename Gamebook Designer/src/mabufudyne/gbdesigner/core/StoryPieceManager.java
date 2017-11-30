@@ -1,6 +1,7 @@
 package mabufudyne.gbdesigner.core;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class StoryPieceManager {
 	
@@ -23,7 +24,12 @@ public class StoryPieceManager {
 		StoryPieceManager.allStoryPieces = allStoryPieces;
 	}
 
-
+	public static StoryPiece getStoryPieceByID(UUID id) {
+		for (StoryPiece sp : allStoryPieces) {
+			if (sp.getID() == id) return sp;
+		}
+		return null;
+	}
 	
 	public static StoryPiece addNewStoryPiece() {
 		StoryPiece sp = new StoryPiece();
@@ -34,8 +40,6 @@ public class StoryPieceManager {
 	public static void removeStoryPiece(StoryPiece sp) {
 		chooseNewActiveStoryPiece(allStoryPieces.indexOf(sp));
 		allStoryPieces.remove(sp);
-		
-		
 	}
 	/** Chooses a new active StoryPiece based on the position of the old one to be deleted */
 	private static void chooseNewActiveStoryPiece(int deletedSPPosition) {
@@ -50,5 +54,9 @@ public class StoryPieceManager {
 	public static void saveChanges(String title, String story) {
 		activeStoryPiece.setTitle(title);
 		activeStoryPiece.setStory(story);
+	}
+	
+	public void addChoice(StoryPiece sp) {
+		activeStoryPiece.addChoice(sp);
 	}
 }
