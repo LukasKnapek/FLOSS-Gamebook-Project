@@ -6,8 +6,10 @@ import mabufudyne.gbdesigner.gui.MainWindow;
 public class EventHandler {
 	public static void createNewStoryPieceAndActivate() {
 		StoryPiece sp = StoryPieceManager.addNewStoryPiece();
-		MainWindow.getInstance().displayStoryPieceItem(sp);
 		changeActiveStoryPiece(sp);
+		MainWindow.getInstance().displayStoryPieceItem(sp);
+		MainWindow.getInstance().highlightActiveStoryPiece();
+		MainWindow.getInstance().buttonCheck();
 	}
 	
 	public static StoryPiece createNewstoryPiece() {
@@ -17,6 +19,7 @@ public class EventHandler {
 	}
 	
 	public static void deleteStoryPiece(StoryPiece sp) {
+		StoryPieceManager.removeStoryPieceLinks(sp);
 		StoryPieceManager.removeStoryPiece(sp);
 		MainWindow.getInstance().reorderStoryPieces(sp);
 		
@@ -26,7 +29,9 @@ public class EventHandler {
 		else {
 			MainWindow.getInstance().clearFields();
 		}
+		MainWindow.getInstance().highlightActiveStoryPiece();
 		performUICheck();
+
 	}
 	
 	public static void performUICheck() {
@@ -54,5 +59,11 @@ public class EventHandler {
 	public static void addChoice(StoryPiece choice) {
 		StoryPieceManager.getActiveStoryPiece().addChoice(choice);
 		ChoiceWindow.getInstance().removeChoiceFromView(choice);
+	}
+	
+	public static void removeChoice(StoryPiece choice) {
+		StoryPieceManager.getActiveStoryPiece().removeChoice(choice);
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getActiveStoryPiece());
+		MainWindow.getInstance().buttonCheck();
 	}
 }

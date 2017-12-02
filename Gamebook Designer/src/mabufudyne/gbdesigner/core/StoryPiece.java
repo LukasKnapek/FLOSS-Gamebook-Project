@@ -14,7 +14,7 @@ public class StoryPiece {
 	
 	public StoryPiece() {
 		this.storyPieceID = UUID.randomUUID();
-		this.title = "Untitled";
+		this.title = UUID.randomUUID().toString();
 		this.story = "";
 		this.choices = new ArrayList<UUID>();
 	}
@@ -28,7 +28,6 @@ public class StoryPiece {
 	public List<UUID> getChoices() {
 		return choices;
 	}
-	
 
 	public String getTitle() {
 		return title;
@@ -48,5 +47,9 @@ public class StoryPiece {
 	
 	public void addChoice(StoryPiece sp) {
 		this.choices.add(sp.getID());
+	}
+
+	public void removeChoice(StoryPiece sp) {
+		this.choices.remove(sp.getID());
 	}
 }

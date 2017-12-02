@@ -33,7 +33,7 @@ public class MainWindow {
 	protected Shell shell;
 	private Text textTitle;
 	private Text textStory;
-	private Table tableStoryPieces;
+	public Table tableStoryPieces;
 	private Table tableChoices;
 	private ToolItem tItemAddStoryPiece;
 	private ToolItem tItemRemoveStoryPiece;
@@ -131,6 +131,12 @@ public class MainWindow {
 		new Label(cChoices, SWT.NONE);
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoices.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				buttonCheck();
+			}
+		});
 		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tableChoices.setHeaderVisible(true);
 		tableChoices.setLinesVisible(true);
@@ -157,6 +163,13 @@ public class MainWindow {
 		tItemAddChoice.setText("+");
 		
 		tItemRemoveChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemRemoveChoice.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				StoryPiece choice = (StoryPiece) tableChoices.getSelection()[0].getData();
+				EventHandler.removeChoice(choice);
+			}
+		});
 		tItemRemoveChoice.setText("-");
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
@@ -298,6 +311,7 @@ public class MainWindow {
 	}
 	
 	public void buttonCheck() {
+
 		if (tableStoryPieces.getItemCount() > 0 && tableStoryPieces.getSelection().length != 0) {
 			tItemRemoveStoryPiece.setEnabled(true);
 			tItemAddChoice.setEnabled(true);

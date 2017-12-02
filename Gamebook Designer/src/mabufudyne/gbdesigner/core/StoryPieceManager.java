@@ -59,4 +59,10 @@ public class StoryPieceManager {
 	public void addChoice(StoryPiece sp) {
 		activeStoryPiece.addChoice(sp);
 	}
+
+	public static void removeStoryPieceLinks(StoryPiece choice) {
+		for (StoryPiece sp : allStoryPieces) {
+			if (sp.getChoices().contains(choice.getID())) sp.removeChoice(choice);
+		}
+	}
 }
