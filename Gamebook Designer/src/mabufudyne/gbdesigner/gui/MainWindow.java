@@ -393,22 +393,22 @@ public class MainWindow {
 		return tableStoryPieces.getItems();
 	}
 
-	public String invokeSaveDialog() {
+	public String invokeSaveDialog(String path) {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setFilterNames(new String[] { "Adventure Files"} );
 		dialog.setFilterExtensions(new String[] {"*.adv"} );
-		dialog.setFilterPath("c:\\");
+		dialog.setFilterPath(path);
 		dialog.setFileName("New Adventure.adv");
 		
 		String savePath = dialog.open();
 		return savePath;
 	}
 
-	public String invokeLoadDialog() {
+	public String invokeLoadDialog(String path) {
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 		dialog.setFilterNames(new String[] { "Adventure Files"} );
 		dialog.setFilterExtensions(new String[] {"*.adv"} );
-		dialog.setFilterPath("c:\\");
+		dialog.setFilterPath(path);
 		
 		String loadPath = dialog.open();
 		return loadPath;

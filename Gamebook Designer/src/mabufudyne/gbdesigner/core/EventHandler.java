@@ -9,6 +9,11 @@ import mabufudyne.gbdesigner.gui.ChoiceWindow;
 import mabufudyne.gbdesigner.gui.MainWindow;
 
 public class EventHandler {
+	
+	private static String lastSaveLocation;
+	private static String lastFileName;
+	private static String lastLoadLocation;
+	
 	public static void createNewStoryPieceAndActivate() {
 		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		changeActiveStoryPiece(sp);
@@ -73,8 +78,7 @@ public class EventHandler {
 	}
 	
 	public static void saveAdventure() {
-		String savePath = MainWindow.getInstance().invokeSaveDialog();
-		System.out.println(savePath);
+		String savePath = MainWindow.getInstance().invokeSaveDialog(lastSaveLocation);
 		if (savePath != null) {
 			try {
 				FileOutputStream fOut = new FileOutputStream(savePath);
@@ -82,16 +86,19 @@ public class EventHandler {
 				out.writeObject(StoryPieceManager.getInstance());
 				out.close();
 				fOut.close();
+				
+				lastSaveLocation = savePath.substring(0, savePath.lastIndexOf("/"));
+				lastFileName = savePath.substring(savePath.lastIndexOf("/"));
+				
+				System.out.println(lastSaveLocation + " " + lastFileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	
 	public static void loadAdventure() {
-		String loadPath = MainWindow.getInstance().invokeLoadDialog();
-		System.out.println(loadPath);
+		String loadPath = MainWindow.getInstance().invokeLoadDialog(lastLoadLocation);
 		if (loadPath != null) {
 			try {
 				FileInputStream fIn = new FileInputStream(loadPath);
@@ -100,13 +107,14 @@ public class EventHandler {
 				in.close();
 				fIn.close();
 				
-				System.out.println(loadedObject instanceof StoryPieceManager);
-
 				if (loadedObject instanceof StoryPieceManager) {
 					StoryPieceManager loadedManager = (StoryPieceManager) loadedObject;
 					StoryPieceManager.replaceManager(loadedManager);
 					MainWindow.getInstance().reloadUI();
 				}
+				
+				lastLoadLocation = loadPath.substring(0, loadPath.lastIndexOf("/"));
+
 				
 			} catch (Exception e) {
 				e.printStackTrace();
