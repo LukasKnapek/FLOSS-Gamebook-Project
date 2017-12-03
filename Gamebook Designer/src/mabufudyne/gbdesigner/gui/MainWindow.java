@@ -399,6 +399,7 @@ public class MainWindow {
 		dialog.setFilterExtensions(new String[] {"*.adv"} );
 		dialog.setFilterPath(path);
 		dialog.setFileName("New Adventure.adv");
+		dialog.setOverwrite(true);
 		
 		String savePath = dialog.open();
 		return savePath;
