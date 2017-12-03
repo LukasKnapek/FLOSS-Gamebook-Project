@@ -117,7 +117,7 @@ public class ChoiceWindow {
 	}
 	
 	public void displayPossibleChoices() {
-		StoryPiece activeSP = StoryPieceManager.getActiveStoryPiece();
+		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 		TableItem[] SPItems = MainWindow.getInstance().getStoryPieceTableItems();
 		tableChoiceSelections.removeAll();
 		

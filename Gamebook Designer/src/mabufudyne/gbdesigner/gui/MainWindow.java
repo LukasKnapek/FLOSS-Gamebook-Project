@@ -1,12 +1,11 @@
 package mabufudyne.gbdesigner.gui;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-
-import java.util.UUID;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -20,7 +19,6 @@ import mabufudyne.gbdesigner.core.StoryPieceManager;
 
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Table;
@@ -96,6 +94,22 @@ public class MainWindow {
 		
 		ToolItem tItemQuickSave = new ToolItem(mainToolBar, SWT.NONE);
 		tItemQuickSave.setText("Save");
+		
+		ToolItem tltmSaveAs = new ToolItem(mainToolBar, SWT.NONE);
+		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (tableStoryPieces.getSelectionCount() > 0) {
+					StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
+					String title = textTitle.getText();
+					String story = textStory.getText();
+					
+					EventHandler.saveStoryPieceChanges(title, story);
+				}
+				EventHandler.saveAdventure();
+			}
+		});
+		tltmSaveAs.setText("Save As");
 		
 		SashForm sashMain = new SashForm(shell, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -332,7 +346,7 @@ public class MainWindow {
 
 	/** Highlights the TableItem of the currently active StoryPiece */
 	public void highlightActiveStoryPiece() {
-		StoryPiece activeSP = StoryPieceManager.getActiveStoryPiece();
+		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 		for (TableItem item : tableStoryPieces.getItems()) {
 			if (item.getData() == activeSP) {
 				tableStoryPieces.select(tableStoryPieces.indexOf(item));
@@ -357,7 +371,16 @@ public class MainWindow {
 		return tableStoryPieces.getItems();
 	}
 
-
+	public String invokeSaveDialog() {
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		dialog.setFilterNames(new String[] { "Adventure Files"} );
+		dialog.setFilterExtensions(new String[] {"*.adv"} );
+		dialog.setFilterPath("c:\\");
+		dialog.setFileName("New Adventure.adv");
+		
+		String savePath = dialog.open();
+		return savePath;
+	}
 
 
 

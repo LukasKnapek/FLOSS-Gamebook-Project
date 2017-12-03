@@ -1,11 +1,14 @@
 package mabufudyne.gbdesigner.core;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
 import mabufudyne.gbdesigner.gui.ChoiceWindow;
 import mabufudyne.gbdesigner.gui.MainWindow;
 
 public class EventHandler {
 	public static void createNewStoryPieceAndActivate() {
-		StoryPiece sp = StoryPieceManager.addNewStoryPiece();
+		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		changeActiveStoryPiece(sp);
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
@@ -13,18 +16,18 @@ public class EventHandler {
 	}
 	
 	public static StoryPiece createNewstoryPiece() {
-		StoryPiece sp = StoryPieceManager.addNewStoryPiece();
+		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		return sp;
 	}
 	
 	public static void deleteStoryPiece(StoryPiece sp) {
-		StoryPieceManager.removeStoryPieceLinks(sp);
-		StoryPieceManager.removeStoryPiece(sp);
+		StoryPieceManager.getInstance().removeStoryPieceLinks(sp);
+		StoryPieceManager.getInstance().removeStoryPiece(sp);
 		MainWindow.getInstance().reorderStoryPieces(sp);
 		
-		if (StoryPieceManager.getActiveStoryPiece() != null) {
-			MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getActiveStoryPiece());
+		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
+			MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		}
 		else {
 			MainWindow.getInstance().clearFields();
@@ -39,31 +42,48 @@ public class EventHandler {
 	}
 
 	public static void saveStoryPieceChanges(String title, String story) {
-		if (StoryPieceManager.getActiveStoryPiece() != null) {
-			StoryPieceManager.saveChanges(title, story);
+		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
+			StoryPieceManager.getInstance().saveChanges(title, story);
 		}		
 	}
 
 	public static void changeActiveStoryPiece(StoryPiece sp) {
-		MainWindow.getInstance().updateStoryPieceItemTitle(StoryPieceManager.getActiveStoryPiece());
-		StoryPieceManager.setActiveStoryPiece(sp);
+		MainWindow.getInstance().updateStoryPieceItemTitle(StoryPieceManager.getInstance().getActiveStoryPiece());
+		StoryPieceManager.getInstance().setActiveStoryPiece(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(sp);
 	}
 	
 	public static void displayChoiceSelectionWindow() {
 		ChoiceWindow.getInstance().open();
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getActiveStoryPiece());
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 	}
 	
 	public static void addChoice(StoryPiece choice) {
-		StoryPieceManager.getActiveStoryPiece().addChoice(choice);
+		StoryPieceManager.getInstance().getActiveStoryPiece().addChoice(choice);
 		ChoiceWindow.getInstance().removeChoiceFromView(choice);
 	}
 	
 	public static void removeChoice(StoryPiece choice) {
-		StoryPieceManager.getActiveStoryPiece().removeChoice(choice);
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getActiveStoryPiece());
+		StoryPieceManager.getInstance().getActiveStoryPiece().removeChoice(choice);
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		MainWindow.getInstance().buttonCheck();
 	}
+	
+	public static void saveAdventure() {
+		String savePath = MainWindow.getInstance().invokeSaveDialog();
+		System.out.println(savePath);
+		if (savePath != null) {
+			try {
+				FileOutputStream fOut = new FileOutputStream(savePath);
+				ObjectOutputStream out = new ObjectOutputStream(fOut);
+				out.writeObject(StoryPieceManager.getInstance());
+				out.close();
+				fOut.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 }
