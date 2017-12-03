@@ -1,16 +1,25 @@
 package mabufudyne.gbdesigner.core;
 
+import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class StoryPieceManager implements java.io.Serializable {
 	
-	private static StoryPieceManager instance = new StoryPieceManager();
-	private static StoryPiece activeStoryPiece;
-	private static ArrayList<StoryPiece> allStoryPieces = new ArrayList<StoryPiece>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7140106431174459518L;
+	private transient static StoryPieceManager instance = new StoryPieceManager();
+	private StoryPiece activeStoryPiece;
+	private ArrayList<StoryPiece> allStoryPieces = new ArrayList<StoryPiece>();
 	
 	public static StoryPieceManager getInstance() {
 		return instance;
+	}
+	
+	public static void replaceManager(StoryPieceManager manager) {
+		instance = manager;
 	}
 	
 	public StoryPiece getActiveStoryPiece() {
@@ -26,7 +35,7 @@ public class StoryPieceManager implements java.io.Serializable {
 	}
 
 	public void setAllStoryPieces(ArrayList<StoryPiece> allStoryPieces) {
-		StoryPieceManager.allStoryPieces = allStoryPieces;
+		this.allStoryPieces = allStoryPieces;
 	}
 
 	public StoryPiece getStoryPieceByID(UUID id) {
@@ -69,5 +78,11 @@ public class StoryPieceManager implements java.io.Serializable {
 		for (StoryPiece sp : allStoryPieces) {
 			if (sp.getChoices().contains(choice.getID())) sp.removeChoice(choice);
 		}
+	}
+	
+	protected Object readResolve() {
+		getInstance().setActiveStoryPiece(getActiveStoryPiece());
+		getInstance().setAllStoryPieces(getAllStoryPieces());	
+	    return getInstance();
 	}
 }

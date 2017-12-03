@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class StoryPiece {
+public class StoryPiece implements java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4835564426765463L;
 	private UUID storyPieceID;
 	private String title;
 	private String story;

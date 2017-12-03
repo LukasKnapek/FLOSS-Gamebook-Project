@@ -111,6 +111,22 @@ public class MainWindow {
 		});
 		tltmSaveAs.setText("Save As");
 		
+		ToolItem tltmLoad = new ToolItem(mainToolBar, SWT.NONE);
+		tltmLoad.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (tableStoryPieces.getSelectionCount() > 0) {
+					StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
+					String title = textTitle.getText();
+					String story = textStory.getText();
+					
+					EventHandler.saveStoryPieceChanges(title, story);
+				}
+				EventHandler.loadAdventure();
+			}
+		});
+		tltmLoad.setText("Load");
+		
 		SashForm sashMain = new SashForm(shell, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
@@ -359,12 +375,18 @@ public class MainWindow {
 			if (item.getData() == sp) {
 				item.setText(1, sp.getTitle());
 			}
-		
 	}
 
 	public void clearFields() {
 		textTitle.setText("");
 		textStory.setText("");
+	}
+	
+	public void clearUI() {
+		textTitle.setText("");
+		textStory.setText("");
+		tableStoryPieces.removeAll();
+		tableChoices.removeAll();
 	}
 	
 	public TableItem[] getStoryPieceTableItems() {
@@ -382,7 +404,27 @@ public class MainWindow {
 		return savePath;
 	}
 
+	public String invokeLoadDialog() {
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		dialog.setFilterNames(new String[] { "Adventure Files"} );
+		dialog.setFilterExtensions(new String[] {"*.adv"} );
+		dialog.setFilterPath("c:\\");
+		
+		String loadPath = dialog.open();
+		return loadPath;
+	}
 
+	public void reloadUI() {
+		clearUI();
+		itemNumber = 1;
+		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {
+			displayStoryPieceItem(sp);
+		}
+		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
+			highlightActiveStoryPiece();
+			displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+		}
+	}
 
 
 

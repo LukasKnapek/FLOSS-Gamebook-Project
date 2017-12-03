@@ -1,6 +1,8 @@
 package mabufudyne.gbdesigner.core;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import mabufudyne.gbdesigner.gui.ChoiceWindow;
@@ -80,6 +82,32 @@ public class EventHandler {
 				out.writeObject(StoryPieceManager.getInstance());
 				out.close();
 				fOut.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public static void loadAdventure() {
+		String loadPath = MainWindow.getInstance().invokeLoadDialog();
+		System.out.println(loadPath);
+		if (loadPath != null) {
+			try {
+				FileInputStream fIn = new FileInputStream(loadPath);
+				ObjectInputStream in = new ObjectInputStream(fIn);
+				Object loadedObject = in.readObject();
+				in.close();
+				fIn.close();
+				
+				System.out.println(loadedObject instanceof StoryPieceManager);
+
+				if (loadedObject instanceof StoryPieceManager) {
+					StoryPieceManager loadedManager = (StoryPieceManager) loadedObject;
+					StoryPieceManager.replaceManager(loadedManager);
+					MainWindow.getInstance().reloadUI();
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
