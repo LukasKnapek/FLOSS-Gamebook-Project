@@ -1,10 +1,10 @@
 package mabufudyne.gbdesigner.core;
 
-import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class StoryPieceManager implements java.io.Serializable {
+public class StoryPieceManager implements Serializable {
 	
 	/**
 	 * 
@@ -65,9 +65,9 @@ public class StoryPieceManager implements java.io.Serializable {
 		else activeStoryPiece = allStoryPieces.get(deletedSPPosition-1);
 	}
 	
-	public void saveChanges(String title, String story) {
-		activeStoryPiece.setTitle(title);
-		activeStoryPiece.setStory(story);
+	public void saveChanges(String[] titleStory) {
+		activeStoryPiece.setTitle(titleStory[0]);
+		activeStoryPiece.setStory(titleStory[1]);
 	}
 	
 	public void addChoice(StoryPiece sp) {

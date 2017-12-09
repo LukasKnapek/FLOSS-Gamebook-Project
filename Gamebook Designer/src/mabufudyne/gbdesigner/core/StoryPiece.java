@@ -1,10 +1,11 @@
 package mabufudyne.gbdesigner.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class StoryPiece implements java.io.Serializable{
+public class StoryPiece implements Serializable{
 	/**
 	 * 
 	 */

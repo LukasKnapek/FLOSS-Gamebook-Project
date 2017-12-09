@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ToolItem;
 
 import mabufudyne.gbdesigner.core.EventHandler;
+import mabufudyne.gbdesigner.core.MementoManager;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
@@ -37,6 +38,8 @@ public class MainWindow {
 	private ToolItem tItemRemoveStoryPiece;
 	private ToolItem tItemAddChoice;
 	private ToolItem tItemRemoveChoice;
+	private ToolItem tItemUndo;
+	private ToolItem tItemRedo;
 	private int itemNumber;
 
 	/**
@@ -100,11 +103,8 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (tableStoryPieces.getSelectionCount() > 0) {
-					StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
-					String title = textTitle.getText();
-					String story = textStory.getText();
 					
-					EventHandler.saveStoryPieceChanges(title, story);
+					EventHandler.saveStoryPieceChanges();
 				}
 				EventHandler.saveAdventure();
 			}
@@ -116,16 +116,34 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (tableStoryPieces.getSelectionCount() > 0) {
-					StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
-					String title = textTitle.getText();
-					String story = textStory.getText();
 					
-					EventHandler.saveStoryPieceChanges(title, story);
+					EventHandler.saveStoryPieceChanges();
 				}
 				EventHandler.loadAdventure();
 			}
 		});
 		tltmLoad.setText("Load");
+		
+		tItemUndo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemUndo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.undo();
+				buttonCheck();
+			}
+		});
+		tItemUndo.setText("Undo");
+		
+		tItemRedo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemRedo.setSelection(true);
+		tItemRedo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.redo();
+				buttonCheck();
+			}
+		});
+		tItemRedo.setText("Redo");
 		
 		SashForm sashMain = new SashForm(shell, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -225,9 +243,8 @@ public class MainWindow {
 				String title = textTitle.getText();
 				String story = textStory.getText();
 				
-				EventHandler.saveStoryPieceChanges(title, story);
+				EventHandler.saveStoryPieceChanges();
 				EventHandler.changeActiveStoryPiece(activatedSP);
-				EventHandler.performUICheck();
 			}
 		});
 		tableStoryPieces.setHeaderVisible(true);
@@ -251,7 +268,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				String title = textTitle.getText();
 				String story = textStory.getText();
-				EventHandler.saveStoryPieceChanges(title, story);
+				EventHandler.saveStoryPieceChanges();
 				EventHandler.createNewStoryPieceAndActivate();
 			}
 		});
@@ -271,7 +288,7 @@ public class MainWindow {
 		tItemRemoveStoryPiece.setText("-");
 		sashMain.setWeights(new int[] {2, 1});
 		
-		buttonCheck();
+		EventHandler.handleActionAftermath();
 
 	}
 
@@ -358,6 +375,9 @@ public class MainWindow {
 			tItemRemoveChoice.setEnabled(false);
 		}
 		
+		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
+		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
+		
 	}
 
 	/** Highlights the TableItem of the currently active StoryPiece */
@@ -425,6 +445,11 @@ public class MainWindow {
 			highlightActiveStoryPiece();
 			displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		}
+
+	}
+	
+	public String[] getTitleStoryFields() {
+		return new String[] {textTitle.getText(), textStory.getText()};
 	}
 
 

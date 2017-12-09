@@ -19,10 +19,11 @@ public class EventHandler {
 		changeActiveStoryPiece(sp);
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
-		MainWindow.getInstance().buttonCheck();
+		handleActionAftermath();
 	}
 	
 	public static StoryPiece createNewstoryPiece() {
+		saveStoryPieceChanges();
 		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		return sp;
@@ -40,17 +41,14 @@ public class EventHandler {
 			MainWindow.getInstance().clearFields();
 		}
 		MainWindow.getInstance().highlightActiveStoryPiece();
-		performUICheck();
-
+		
+		handleActionAftermath();
 	}
-	
-	public static void performUICheck() {
-		MainWindow.getInstance().buttonCheck();
-	}
-
-	public static void saveStoryPieceChanges(String title, String story) {
+		
+	public static void saveStoryPieceChanges() {
 		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
-			StoryPieceManager.getInstance().saveChanges(title, story);
+			StoryPieceManager.getInstance().saveChanges(MainWindow.getInstance().getTitleStoryFields());
+			MainWindow.getInstance().reloadUI();
 		}		
 	}
 
@@ -64,6 +62,7 @@ public class EventHandler {
 	public static void displayChoiceSelectionWindow() {
 		ChoiceWindow.getInstance().open();
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+		handleActionAftermath();
 	}
 	
 	public static void addChoice(StoryPiece choice) {
@@ -97,7 +96,7 @@ public class EventHandler {
 		}
 	}
 	
-	public static void loadAdventure() {
+	public static void loadAdventure() { 
 		String loadPath = MainWindow.getInstance().invokeLoadDialog(lastLoadLocation);
 		if (loadPath != null) {
 			try {
@@ -122,4 +121,29 @@ public class EventHandler {
 		}
 	}
 
+	public static void saveState() {
+		MementoManager.getInstance().saveState();
+	}
+	
+	public static void redo() {
+		Memento lastState = MementoManager.getInstance().getNextState();
+		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
+		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
+		MainWindow.getInstance().reloadUI();
+	}
+	
+	public static void undo() {
+		Memento lastState = MementoManager.getInstance().getPreviousState();
+		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
+		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
+		MainWindow.getInstance().reloadUI();
+		
+		//System.out.println(StoryPieceManager.getInstance().getActiveStoryPiece());
+		//System.out.println(StoryPieceManager.getInstance().getAllStoryPieces().contains(StoryPieceManager.getInstance().getActiveStoryPiece()));
+	}
+	
+	public static void handleActionAftermath() {
+		saveState();
+		MainWindow.getInstance().buttonCheck();
+	}
 }
