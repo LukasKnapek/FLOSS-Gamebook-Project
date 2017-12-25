@@ -90,7 +90,9 @@ public class MainWindow {
 		shell.setLayout(new GridLayout(1, false));
 		
 		ToolBar mainToolBar = new ToolBar(shell, SWT.FLAT | SWT.RIGHT);
-		mainToolBar.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		GridData gd_mainToolBar = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_mainToolBar.horizontalIndent = 5;
+		mainToolBar.setLayoutData(gd_mainToolBar);
 		
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
 		tItemNew.setText("New");
@@ -144,6 +146,15 @@ public class MainWindow {
 			}
 		});
 		tItemRedo.setText("Redo");
+		
+		ToolItem tItemExport = new ToolItem(mainToolBar, SWT.NONE);
+		tItemExport.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.exportAdventure();
+			}
+		});
+		tItemExport.setText("Export");
 		
 		SashForm sashMain = new SashForm(shell, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -434,6 +445,17 @@ public class MainWindow {
 		String loadPath = dialog.open();
 		return loadPath;
 	}
+	
+	public String invokeExportDialog() {
+		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		dialog.setFilterNames(new String[] { "HTML Files"} );
+		dialog.setFilterExtensions(new String[] {"*.html"} );
+		dialog.setFileName("Adventure.html");
+		dialog.setOverwrite(true);
+				
+		String exportPath = dialog.open();
+		return exportPath;
+	}
 
 	public void reloadUI() {
 		clearUI();
@@ -450,6 +472,13 @@ public class MainWindow {
 	
 	public String[] getTitleStoryFields() {
 		return new String[] {textTitle.getText(), textStory.getText()};
+	}
+	
+	public String getStoryPieceViewOrder(StoryPiece sp) {
+		for (TableItem item : tableStoryPieces.getItems()) {
+			if (sp == item.getData()) return item.getText(0);
+		}
+		return "";
 	}
 
 

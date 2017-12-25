@@ -120,6 +120,11 @@ public class EventHandler {
 			}
 		}
 	}
+	
+	public static void exportAdventure() {
+		String exportPath = MainWindow.getInstance().invokeExportDialog();
+		ExportManager.getInstance().exportAdventure(exportPath);
+	}
 
 	public static void saveState() {
 		MementoManager.getInstance().saveState();
