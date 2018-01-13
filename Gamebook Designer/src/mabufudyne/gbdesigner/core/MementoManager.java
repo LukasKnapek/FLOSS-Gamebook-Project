@@ -1,8 +1,6 @@
 package mabufudyne.gbdesigner.core;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class MementoManager {
 	private ArrayList<Memento> history;

@@ -2,7 +2,6 @@ package mabufudyne.gbdesigner.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class StoryPieceManager implements Serializable {
 	
@@ -37,13 +36,6 @@ public class StoryPieceManager implements Serializable {
 	public void setAllStoryPieces(ArrayList<StoryPiece> allStoryPieces) {
 		this.allStoryPieces = allStoryPieces;
 	}
-
-	public StoryPiece getStoryPieceByID(UUID id) {
-		for (StoryPiece sp : allStoryPieces) {
-			if (sp.getID() == id) return sp;
-		}
-		return null;
-	}
 	
 	public StoryPiece addNewStoryPiece() {
 		StoryPiece sp = new StoryPiece();
@@ -76,7 +68,7 @@ public class StoryPieceManager implements Serializable {
 
 	public void removeStoryPieceLinks(StoryPiece choice) {
 		for (StoryPiece sp : allStoryPieces) {
-			if (sp.getChoices().contains(choice.getID())) sp.removeChoice(choice);
+			if (sp.getChoices().contains(choice)) sp.removeChoice(choice);
 		}
 	}
 	

@@ -1,10 +1,7 @@
 package mabufudyne.gbdesigner.core;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.ObjectOutputStream;
-import java.util.UUID;
 
 import org.eclipse.swt.widgets.TableItem;
 
@@ -74,9 +71,8 @@ public class ExportManager {
 			addNewLines(1);
 			this.HTMLContents.append(sp.getStory());
 			addNewLines(2);
-			for (UUID choiceID : sp.getChoices()) {
-				StoryPiece choice = StoryPieceManager.getInstance().getStoryPieceByID(choiceID);
-				this.HTMLContents.append(String.format("<i>   %s ... %s</i>", choice.getTitle(), MainWindow.getInstance().getStoryPieceViewOrder(choice)));
+			for (StoryPiece choiceSP : sp.getChoices()) {
+				this.HTMLContents.append(String.format("<i>   %s ... %s</i>", choiceSP.getTitle(), MainWindow.getInstance().getStoryPieceViewOrder(choiceSP)));
 				addNewLines(1);
 			}
 			addNewLines(1);

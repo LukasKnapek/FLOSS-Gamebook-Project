@@ -10,18 +10,13 @@ import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.DisposeEvent;
 
 public class ChoiceWindow {
 
@@ -128,7 +123,7 @@ public class ChoiceWindow {
 		// Copy TableItems of eligible StoryPieces from MainWindow
 		for (TableItem item : SPItems) {
 			StoryPiece itemSP = (StoryPiece) item.getData();
-			if (!activeSP.getChoices().contains(itemSP.getID()) && item.getData() != activeSP) {
+			if (!activeSP.getChoices().contains(itemSP) && item.getData() != activeSP) {
 				TableItem choiceItem = new TableItem(tableChoiceSelections, SWT.CENTER);
 				choiceItem.setText(0, item.getText(0));
 				choiceItem.setText(1, item.getText(1));

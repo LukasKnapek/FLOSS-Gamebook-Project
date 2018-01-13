@@ -251,8 +251,6 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
-				String title = textTitle.getText();
-				String story = textStory.getText();
 				
 				EventHandler.saveStoryPieceChanges();
 				EventHandler.changeActiveStoryPiece(activatedSP);
@@ -277,8 +275,6 @@ public class MainWindow {
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String title = textTitle.getText();
-				String story = textStory.getText();
 				EventHandler.saveStoryPieceChanges();
 				EventHandler.createNewStoryPieceAndActivate();
 			}
@@ -321,7 +317,7 @@ public class MainWindow {
 		tableChoices.removeAll();
 		for (TableItem spItem : spItems) {
 			StoryPiece sp = (StoryPiece) spItem.getData();
-			if (displayedSP.getChoices().contains(sp.getID())) {
+			if (displayedSP.getChoices().contains(sp)) {
 				TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
 				choiceItem.setData(sp);
 				choiceItem.setText(0, spItem.getText(0));
