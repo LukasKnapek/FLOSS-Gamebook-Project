@@ -73,7 +73,8 @@ public class ExportManager {
 			this.HTMLContents.append(sp.getStory());
 			addNewLines(2);
 			for (StoryPiece choiceSP : sp.getChoices()) {
-				this.HTMLContents.append(String.format("<i>   %s ... %s</i>", choiceSP.getTitle(), MainWindow.getInstance().getStoryPieceViewOrder(choiceSP)));
+				// TODO: Make ExportManager take SP order from Model, not View
+				//this.HTMLContents.append(String.format("<i>   %s ... %s</i>", choiceSP.getTitle(), MainWindow.getInstance().getStoryPieceViewOrder(choiceSP)));
 				addNewLines(1);
 			}
 			addNewLines(1);

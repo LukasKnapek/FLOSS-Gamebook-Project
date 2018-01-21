@@ -14,64 +14,62 @@ public class EventHandler {
 	private static String lastFileName;
 	private static String lastLoadLocation;
 	
-	public static void createNewStoryPieceAndActivate() {
+	// Create new SP, save state and return the SP
+	public static StoryPiece createNewStoryPieceAndActivate() {
 		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		changeActiveStoryPiece(sp);
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		handleActionAftermath();
+		return sp;
 	}
 	
-	public static StoryPiece createNewstoryPiece() {
-		saveStoryPieceChanges();
+	
+	// Create new SP, dont immediately save state
+	public static StoryPiece createNewStoryPiece() {
 		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		return sp;
 	}
 	
 	public static void deleteStoryPiece(StoryPiece sp) {
+		// Remove the SP, its references in any other SP choices and its item
 		StoryPieceManager.getInstance().removeStoryPieceLinks(sp);
 		StoryPieceManager.getInstance().removeStoryPiece(sp);
-		MainWindow.getInstance().deleteStoryPieceItem(sp);
+		MainWindow.getInstance().removeStoryPieceItem(sp);
 		
-		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
-			MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
-		}
-		else {
-			MainWindow.getInstance().clearFields();
-		}
+		// Highlight the new active SP and display its contents
+		MainWindow.getInstance().clearFields();
 		MainWindow.getInstance().highlightActiveStoryPiece();
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		
 		handleActionAftermath();
 	}
-		
-	public static void saveStoryPieceChanges() {
-		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
-			StoryPieceManager.getInstance().saveChanges(MainWindow.getInstance().getTitleStoryFields());
-			MainWindow.getInstance().reloadUI();
-		}		
-	}
 
 	public static void changeActiveStoryPiece(StoryPiece sp) {
-		MainWindow.getInstance().updateStoryPieceItemTitle(StoryPieceManager.getInstance().getActiveStoryPiece());
+		// Change active SP, highlight it in the grid and display its contents
 		StoryPieceManager.getInstance().setActiveStoryPiece(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(sp);
 	}
 	
+	// Display choice selection window, save state once user finished working with it
 	public static void displayChoiceSelectionWindow() {
 		ChoiceWindow.getInstance().open();
+		// Update active SP in view (we might have added choices)
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		handleActionAftermath();
 	}
 	
 	public static void addChoice(StoryPiece choice) {
 		StoryPieceManager.getInstance().getActiveStoryPiece().addChoice(choice);
+		// Remove the added choice from the view
 		ChoiceWindow.getInstance().removeChoiceFromView(choice);
 	}
 	
 	public static void removeChoice(StoryPiece choice) {
-		StoryPieceManager.getInstance().getActiveStoryPiece().removeChoice(choice);
+		StoryPieceManager.getInstance().removeChoice(choice);
+		// Update active SP in view (we removed a choice)
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
 		MainWindow.getInstance().buttonCheck();
 	}
@@ -142,9 +140,6 @@ public class EventHandler {
 		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
 		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
 		MainWindow.getInstance().reloadUI();
-		
-		//System.out.println(StoryPieceManager.getInstance().getActiveStoryPiece());
-		//System.out.println(StoryPieceManager.getInstance().getAllStoryPieces().contains(StoryPieceManager.getInstance().getActiveStoryPiece()));
 	}
 	
 	public static void handleActionAftermath() {
@@ -154,6 +149,7 @@ public class EventHandler {
 	
 	public static void changeFixedProperty(StoryPiece sp) {
 		sp.setFixed(!sp.isFixed());
+		handleActionAftermath();
 	}
 	
 	public static void changeStoryPieceOrder(StoryPiece sp, int order) {
@@ -164,9 +160,16 @@ public class EventHandler {
 	public static void changeStoryPieceTitle(StoryPiece sp, String title) {
 		sp.setTitle(title);
 		MainWindow.getInstance().reloadUI();
+		handleActionAftermath();
 	}
 
 	public static void changeStoryPieceStory(StoryPiece sp, String story) {
 		sp.setStory(story);
+		handleActionAftermath();
+	}
+	
+	public static void performInitialSetup() {
+		EventHandler.createNewStoryPieceAndActivate();
+		EventHandler.handleActionAftermath();
 	}
 }

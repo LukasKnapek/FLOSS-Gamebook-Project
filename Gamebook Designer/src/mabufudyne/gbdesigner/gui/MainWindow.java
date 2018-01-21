@@ -83,6 +83,10 @@ public class MainWindow {
 	public void open() {
 		display = Display.getDefault();
 		createContents();
+		
+		// Create an initial StoryPiece
+		EventHandler.performInitialSetup();
+		
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -121,10 +125,6 @@ public class MainWindow {
 		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (gridStoryPieces.getSelectionCount() > 0) {
-					
-					EventHandler.saveStoryPieceChanges();
-				}
 				EventHandler.saveAdventure();
 			}
 		});
@@ -134,10 +134,6 @@ public class MainWindow {
 		tltmLoad.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (gridStoryPieces.getSelectionCount() > 0) {
-					
-					EventHandler.saveStoryPieceChanges();
-				}
 				EventHandler.loadAdventure();
 			}
 		});
@@ -356,7 +352,6 @@ public class MainWindow {
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.saveStoryPieceChanges();
 				EventHandler.createNewStoryPieceAndActivate();
 			}
 		});
@@ -367,7 +362,7 @@ public class MainWindow {
 		tItemRemoveStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				GridItem item = getSelectedTableItem(gridStoryPieces);
+				GridItem item = gridStoryPieces.getSelection()[0];
 				if (item.getData() instanceof StoryPiece) {
 					EventHandler.deleteStoryPiece((StoryPiece) item.getData());
 				}
@@ -375,11 +370,10 @@ public class MainWindow {
 		});
 		tItemRemoveStoryPiece.setText("-");
 		sashMain.setWeights(new int[] {2, 1});
-		
-		EventHandler.createNewStoryPieceAndActivate();
-		EventHandler.handleActionAftermath();
 
 	}
+	
+	
 
 	public void displayStoryPieceItem(StoryPiece displayedSP) {
 		GridItem item = new GridItem(gridStoryPieces, SWT.CENTER);
@@ -411,14 +405,7 @@ public class MainWindow {
 		}
 	}
 
-	private GridItem getSelectedTableItem(Grid tableSource) {
-		return tableSource.getSelection()[0];
-	}
-	
-	/** Reorders StoryPiece TableItems in tableStoryPieces. 
-	 * @argument sp The StoryPiece which has been removed
-	 */
-	public void deleteStoryPieceItem(StoryPiece sp) {
+	public void removeStoryPieceItem(StoryPiece sp) {
 		for (GridItem item : gridStoryPieces.getItems()) {
 			if (item.getData() == sp) {
 				gridStoryPieces.remove(gridStoryPieces.indexOf(item));
@@ -430,11 +417,9 @@ public class MainWindow {
 
 		if (StoryPieceManager.getInstance().canRemoveStoryPieces() && gridStoryPieces.getSelection().length != 0) {
 			tItemRemoveStoryPiece.setEnabled(true);
-			tItemAddChoice.setEnabled(true);
 		}
 		else {
 			tItemRemoveStoryPiece.setEnabled(false);
-			tItemAddChoice.setEnabled(false);
 		}
 		
 		if (tableChoices.getItemCount() > 0 && tableChoices.getSelection().length != 0) {
@@ -459,13 +444,6 @@ public class MainWindow {
 		}
 	}
 
-	public void updateStoryPieceItemTitle(StoryPiece sp) {
-		for (GridItem item : gridStoryPieces.getItems())
-			if (item.getData() == sp) {
-				item.setText(1, sp.getTitle());
-			}
-	}
-
 	public void clearFields() {
 		textTitle.setText("");
 		textStory.setText("");
@@ -474,7 +452,7 @@ public class MainWindow {
 	public void clearUI() {
 		textTitle.setText("");
 		textStory.setText("");
-		gridStoryPieces.removeAll();
+		gridStoryPieces.clearItems();
 		tableChoices.removeAll();
 	}
 	
@@ -519,29 +497,12 @@ public class MainWindow {
 		clearUI();
 		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {
 			displayStoryPieceItem(sp);
+			if (sp == StoryPieceManager.getInstance().getActiveStoryPiece()) {
+				highlightActiveStoryPiece();
+				displayStoryPieceContents(sp);
+			}
 		}
-		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
-			highlightActiveStoryPiece();
-			displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
-		}
-
 	}
-	
-	public String[] getTitleStoryFields() {
-		return new String[] {textTitle.getText(), textStory.getText()};
-	}
-	
-	public String getStoryPieceViewOrder(StoryPiece sp) {
-		for (GridItem item : gridStoryPieces.getItems()) {
-			if (sp == item.getData()) return item.getText(0);
-		}
-		return "";
-	}
-
-
-
-
-
 }
 
 

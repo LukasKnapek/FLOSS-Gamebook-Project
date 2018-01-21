@@ -5,12 +5,10 @@ import java.util.ArrayList;
 
 public class StoryPieceManager implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7140106431174459518L;
 	private transient static StoryPieceManager instance = new StoryPieceManager();
 	private int maxAvailableOrder = 1;
+	// TODO: Order update on load/undo/redo
 	private StoryPiece activeStoryPiece;
 	private ArrayList<StoryPiece> allStoryPieces = new ArrayList<StoryPiece>();
 	
@@ -52,29 +50,24 @@ public class StoryPieceManager implements Serializable {
 	private void chooseNewActiveStoryPiece(int deletedSPPosition) {
 		// If the deleted StoryPiece is the first one, we will make the next one active
 		if (deletedSPPosition == 0) activeStoryPiece = allStoryPieces.get(1);
-		// Otherwise just make active the StoryPiece in front of the deleted one
-		else activeStoryPiece = allStoryPieces.get(deletedSPPosition-1);
-	}
-	
-	public void saveChanges(String[] titleStory) {
-		activeStoryPiece.setTitle(titleStory[0]);
-		activeStoryPiece.setStory(titleStory[1]);
+		// If the deleted StoryPiece is the last one, make the one before it active
+		else if (deletedSPPosition == allStoryPieces.size()-1) activeStoryPiece = allStoryPieces.get(deletedSPPosition-1);
+		// Otherwise just make active the StoryPiece that follows the deleted StoryPiece
+		else activeStoryPiece = allStoryPieces.get(deletedSPPosition+1);
 	}
 	
 	public void addChoice(StoryPiece sp) {
 		activeStoryPiece.addChoice(sp);
+	}
+	
+	public void removeChoice(StoryPiece sp) {
+		activeStoryPiece.removeChoice(sp);	
 	}
 
 	public void removeStoryPieceLinks(StoryPiece choice) {
 		for (StoryPiece sp : allStoryPieces) {
 			if (sp.getChoices().contains(choice)) sp.removeChoice(choice);
 		}
-	}
-	
-	protected Object readResolve() {
-		getInstance().setActiveStoryPiece(getActiveStoryPiece());
-		getInstance().setAllStoryPieces(getAllStoryPieces());	
-	    return getInstance();
 	}
 	
 	public boolean canRemoveStoryPieces() {
@@ -92,4 +85,6 @@ public class StoryPieceManager implements Serializable {
 	public void decrementOrder() {
 		maxAvailableOrder--;
 	}
+
+
 }

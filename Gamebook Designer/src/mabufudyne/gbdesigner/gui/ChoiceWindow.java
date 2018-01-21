@@ -24,11 +24,6 @@ public class ChoiceWindow {
 	private static ChoiceWindow instance = new ChoiceWindow();
 	protected Shell shell;
 	private Table tableChoiceSelections;
-	private int itemNumber;
-
-	public ChoiceWindow() {
-		this.itemNumber = 1;
-	}
 
 	/**
 	 * Open the window.
@@ -83,8 +78,7 @@ public class ChoiceWindow {
 					EventHandler.addChoice(chosenSP);
 				}
 				else {
-					chosenSP = EventHandler.createNewstoryPiece();
-					EventHandler.saveStoryPieceChanges();
+					chosenSP = EventHandler.createNewStoryPiece();
 					EventHandler.addChoice(chosenSP);
 					shell.close();
 				}
@@ -139,17 +133,5 @@ public class ChoiceWindow {
 	
 	public static ChoiceWindow getInstance() {
 		return instance;
-	}
-	
-	private int getItemNumber() {
-		return itemNumber;
-	}
-	
-	private void incrementItemNumber() {
-		itemNumber++;
-	}
-	
-	private void decrementItemNumber() {
-		itemNumber--;
 	}
 }
