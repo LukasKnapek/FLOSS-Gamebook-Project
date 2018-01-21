@@ -1,30 +1,44 @@
 package mabufudyne.gbdesigner.gui;
 
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
+
+import org.eclipse.nebula.widgets.grid.Grid;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
-
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.nebula.widgets.grid.GridColumnGroup;
+import org.eclipse.nebula.widgets.grid.GridItem;
+import org.eclipse.nebula.widgets.grid.GridColumn;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionListener;
+import java.util.function.Consumer;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
 public class MainWindow {
 
@@ -32,24 +46,24 @@ public class MainWindow {
 	protected Shell shell;
 	private Text textTitle;
 	private Text textStory;
-	public Table tableStoryPieces;
 	private Table tableChoices;
+	private Grid gridStoryPieces;
 	private ToolItem tItemAddStoryPiece;
 	private ToolItem tItemRemoveStoryPiece;
 	private ToolItem tItemAddChoice;
 	private ToolItem tItemRemoveChoice;
 	private ToolItem tItemUndo;
 	private ToolItem tItemRedo;
-	private int itemNumber;
+	private Display display;
+	private GridColumn gColFixed;
+	private GridColumn gColOrder;
+	private GridColumn gColTitle;
+	private Spinner spinOrder;
 
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-	
-	protected MainWindow() {
-		this.itemNumber = 1;
-	}
 	
 	public static MainWindow getInstance() {
 		return instance;
@@ -67,7 +81,7 @@ public class MainWindow {
 	 * Open the window.
 	 */
 	public void open() {
-		Display display = Display.getDefault();
+		display = Display.getDefault();
 		createContents();
 		shell.open();
 		shell.layout();
@@ -84,10 +98,13 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shell = new Shell();
+		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/img_checkbox_checked.png"));
 		shell.setMinimumSize(new Point(700, 550));
 		shell.setSize(450, 300);
 		shell.setText("SWT Application");
 		shell.setLayout(new GridLayout(1, false));
+		
+		
 		
 		ToolBar mainToolBar = new ToolBar(shell, SWT.FLAT | SWT.RIGHT);
 		GridData gd_mainToolBar = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
@@ -104,7 +121,7 @@ public class MainWindow {
 		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (tableStoryPieces.getSelectionCount() > 0) {
+				if (gridStoryPieces.getSelectionCount() > 0) {
 					
 					EventHandler.saveStoryPieceChanges();
 				}
@@ -117,7 +134,7 @@ public class MainWindow {
 		tltmLoad.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (tableStoryPieces.getSelectionCount() > 0) {
+				if (gridStoryPieces.getSelectionCount() > 0) {
 					
 					EventHandler.saveStoryPieceChanges();
 				}
@@ -162,14 +179,41 @@ public class MainWindow {
 		SashForm sashFields = new SashForm(sashMain, SWT.VERTICAL);
 		
 		Composite cTitle = new Composite(sashFields, SWT.NONE);
-		cTitle.setLayout(new GridLayout(1, false));
+		cTitle.setLayout(new GridLayout(2, false));
+		
+		Label lblNewLabel_1 = new Label(cTitle, SWT.NONE);
+		lblNewLabel_1.setText("Order");
 		
 		Label lblTitle = new Label(cTitle, SWT.NONE);
 		lblTitle.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		lblTitle.setText("Title");
 		
+		spinOrder = new Spinner(cTitle, SWT.NONE);
+		spinOrder.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				// Get the new order number and the currently active SP
+				int newOrder = Integer.valueOf(spinOrder.getText());
+				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
+				
+				EventHandler.changeStoryPieceOrder(activeSP, newOrder);
+			}
+		});
+		spinOrder.setTextLimit(3);
+		spinOrder.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		spinOrder.setMaximum(500);
+		
 		textTitle = new Text(cTitle, SWT.BORDER);
-		textTitle.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		textTitle.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				String newTitle = textTitle.getText();
+				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
+				
+				EventHandler.changeStoryPieceTitle(activeSP, newTitle);
+			}
+		});
+		textTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		Composite cStory = new Composite(sashFields, SWT.NONE);
 		cStory.setLayout(new GridLayout(1, false));
@@ -179,6 +223,15 @@ public class MainWindow {
 		lblStory.setText("Story");
 		
 		textStory = new Text(cStory, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
+		textStory.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				String newStory = textStory.getText();
+				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
+				
+				EventHandler.changeStoryPieceStory(activeSP, newStory);
+			}
+		});
 		textStory.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		Composite cChoices = new Composite(sashFields, SWT.NONE);
@@ -246,27 +299,55 @@ public class MainWindow {
 		lblOverview.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 		lblOverview.setText("Overview");
 		
-		tableStoryPieces = new Table(cOverview, SWT.BORDER | SWT.FULL_SELECTION);
-		tableStoryPieces.addSelectionListener(new SelectionAdapter() {
+		gridStoryPieces = new Grid(cOverview, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
+		gridStoryPieces.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				StoryPiece activatedSP = (StoryPiece) tableStoryPieces.getSelection()[0].getData();
-				
-				EventHandler.saveStoryPieceChanges();
-				EventHandler.changeActiveStoryPiece(activatedSP);
+				if (e.detail == SWT.CHECK) {
+					GridItem checkedItem = (GridItem) e.item;
+					EventHandler.changeFixedProperty((StoryPiece) checkedItem.getData());
+				}
+				else {
+					StoryPiece sp = (StoryPiece) e.item.getData();
+					EventHandler.changeActiveStoryPiece(sp);
+					displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+				}
 			}
 		});
-		tableStoryPieces.setHeaderVisible(true);
-		tableStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		tableStoryPieces.setLinesVisible(true);
+		gridStoryPieces.setAutoWidth(false);
+		gridStoryPieces.addControlListener(new ControlAdapter() {
+			// Resizing column width whenever the grid is resized
+			@Override
+			public void controlResized(ControlEvent e) {
+				int titleColSize = gridStoryPieces.getSize().x - gColFixed.getWidth() - gColOrder.getWidth();
+				gColTitle.setWidth(titleColSize);
+			}
+		});
+		gridStoryPieces.setRowsResizeable(true);
+		gridStoryPieces.setTreeLinesVisible(false);
+		gridStoryPieces.setHeaderVisible(true);
+		gridStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
-		TableColumn tblclmnSPNumber = new TableColumn(tableStoryPieces, SWT.CENTER);
-		tblclmnSPNumber.setWidth(30);
-		tblclmnSPNumber.setText("#");
+		gColOrder = new GridColumn(gridStoryPieces, SWT.CENTER);
+		gColOrder.setSummary(false);
+		gColOrder.setDetail(false);
+		gColOrder.setMoveable(true);
+		gColOrder.setText("#");
+		gColOrder.setWidth(30);
 		
-		TableColumn tblclmnStoryPieceTitle = new TableColumn(tableStoryPieces, SWT.CENTER);
-		tblclmnStoryPieceTitle.setWidth(100);
-		tblclmnStoryPieceTitle.setText("Title");
+		gColTitle = new GridColumn(gridStoryPieces, SWT.CENTER);
+		gColTitle.setDetail(false);
+		gColTitle.setSummary(false);
+		gColTitle.setMoveable(true);
+		gColTitle.setText("Title");
+		gColTitle.setWidth(100);
+		
+		gColFixed = new GridColumn(gridStoryPieces, SWT.CHECK | SWT.CENTER);
+		gColFixed.setMinimumWidth(50);
+		gColFixed.setDetail(false);
+		gColFixed.setSummary(false);
+		gColFixed.setText("Fixed");
+		gColFixed.setWidth(50);
 		
 		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
@@ -286,7 +367,7 @@ public class MainWindow {
 		tItemRemoveStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TableItem item = getSelectedTableItem(tableStoryPieces);
+				GridItem item = getSelectedTableItem(gridStoryPieces);
 				if (item.getData() instanceof StoryPiece) {
 					EventHandler.deleteStoryPiece((StoryPiece) item.getData());
 				}
@@ -295,27 +376,31 @@ public class MainWindow {
 		tItemRemoveStoryPiece.setText("-");
 		sashMain.setWeights(new int[] {2, 1});
 		
+		EventHandler.createNewStoryPieceAndActivate();
 		EventHandler.handleActionAftermath();
 
 	}
 
 	public void displayStoryPieceItem(StoryPiece displayedSP) {
-		TableItem item = new TableItem(tableStoryPieces, SWT.CENTER);
+		GridItem item = new GridItem(gridStoryPieces, SWT.CENTER);
+		
 		item.setData(displayedSP);
-		// Column 0 - order, column 1 - StoryPiece title
-		item.setText(0, String.valueOf(getItemNumber()));
+		// Column 0 - order, column 1 - StoryPiece title, column 2 - whether the order of the StoryPiece is fixed
+		item.setText(0, String.valueOf(displayedSP.getOrder()));
 		item.setText(1, displayedSP.getTitle());
-		incrementItemNumber();
+		item.setChecked(2, displayedSP.isFixed());
+		item.setBackground(gridStoryPieces.getBackground());
 	}
 	
 	public void displayStoryPieceContents(StoryPiece displayedSP) {
-		TableItem[] spItems = getStoryPieceTableItems();
+		GridItem[] spItems = getStoryPieceTableItems();
 
+		spinOrder.setSelection(displayedSP.getOrder());
 		textTitle.setText(displayedSP.getTitle());
 		textStory.setText(displayedSP.getStory());
 		
 		tableChoices.removeAll();
-		for (TableItem spItem : spItems) {
+		for (GridItem spItem : spItems) {
 			StoryPiece sp = (StoryPiece) spItem.getData();
 			if (displayedSP.getChoices().contains(sp)) {
 				TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
@@ -325,48 +410,25 @@ public class MainWindow {
 			}
 		}
 	}
-	
-	private int getItemNumber() {
-		return itemNumber;
-	}
-	
-	private void incrementItemNumber() {
-		itemNumber++;
-	}
-	
-	private void decrementItemNumber() {
-		itemNumber--;
-	}
 
-	private TableItem getSelectedTableItem(Table tableSource) {
+	private GridItem getSelectedTableItem(Grid tableSource) {
 		return tableSource.getSelection()[0];
 	}
 	
 	/** Reorders StoryPiece TableItems in tableStoryPieces. 
 	 * @argument sp The StoryPiece which has been removed
 	 */
-	public void reorderStoryPieces(StoryPiece sp) {
-		int deletedItemNumber = 1;
-		for (TableItem item : tableStoryPieces.getItems()) {
+	public void deleteStoryPieceItem(StoryPiece sp) {
+		for (GridItem item : gridStoryPieces.getItems()) {
 			if (item.getData() == sp) {
-				deletedItemNumber = Integer.valueOf(item.getText(0));
-				tableStoryPieces.remove(tableStoryPieces.indexOf(item));
-				decrementItemNumber();
-			}
-		}
-		
-		for (TableItem item : tableStoryPieces.getItems()) {
-			int tItemNumber = Integer.valueOf(item.getText(0));
-			if (tItemNumber > deletedItemNumber) {
-				tItemNumber--;
-				item.setText(0,String.valueOf(tItemNumber));
+				gridStoryPieces.remove(gridStoryPieces.indexOf(item));
 			}
 		}
 	}
 	
 	public void buttonCheck() {
 
-		if (tableStoryPieces.getItemCount() > 0 && tableStoryPieces.getSelection().length != 0) {
+		if (StoryPieceManager.getInstance().canRemoveStoryPieces() && gridStoryPieces.getSelection().length != 0) {
 			tItemRemoveStoryPiece.setEnabled(true);
 			tItemAddChoice.setEnabled(true);
 		}
@@ -390,15 +452,15 @@ public class MainWindow {
 	/** Highlights the TableItem of the currently active StoryPiece */
 	public void highlightActiveStoryPiece() {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-		for (TableItem item : tableStoryPieces.getItems()) {
+		for (GridItem item : gridStoryPieces.getItems()) {
 			if (item.getData() == activeSP) {
-				tableStoryPieces.select(tableStoryPieces.indexOf(item));
+				gridStoryPieces.select(gridStoryPieces.indexOf(item));
 			}
 		}
 	}
 
 	public void updateStoryPieceItemTitle(StoryPiece sp) {
-		for (TableItem item : tableStoryPieces.getItems())
+		for (GridItem item : gridStoryPieces.getItems())
 			if (item.getData() == sp) {
 				item.setText(1, sp.getTitle());
 			}
@@ -412,12 +474,12 @@ public class MainWindow {
 	public void clearUI() {
 		textTitle.setText("");
 		textStory.setText("");
-		tableStoryPieces.removeAll();
+		gridStoryPieces.removeAll();
 		tableChoices.removeAll();
 	}
 	
-	public TableItem[] getStoryPieceTableItems() {
-		return tableStoryPieces.getItems();
+	public GridItem[] getStoryPieceTableItems() {
+		return gridStoryPieces.getItems();
 	}
 
 	public String invokeSaveDialog(String path) {
@@ -455,7 +517,6 @@ public class MainWindow {
 
 	public void reloadUI() {
 		clearUI();
-		itemNumber = 1;
 		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {
 			displayStoryPieceItem(sp);
 		}
@@ -471,7 +532,7 @@ public class MainWindow {
 	}
 	
 	public String getStoryPieceViewOrder(StoryPiece sp) {
-		for (TableItem item : tableStoryPieces.getItems()) {
+		for (GridItem item : gridStoryPieces.getItems()) {
 			if (sp == item.getData()) return item.getText(0);
 		}
 		return "";

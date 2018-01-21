@@ -9,6 +9,8 @@ public class StoryPiece implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4835564426765463L;
+	private int order;
+	private boolean fixedOrder;
 	private String title;
 	private String story;
 	private ArrayList<StoryPiece> choices;
@@ -18,6 +20,9 @@ public class StoryPiece implements Serializable{
 	public StoryPiece() {
 		this.title = "Untitled";
 		this.story = "";
+		this.order = StoryPieceManager.getInstance().getNextAvailableOrder();
+		StoryPieceManager.getInstance().incrementOrder();
+		this.fixedOrder = false;
 		this.choices = new ArrayList<StoryPiece>();
 	}
 
@@ -50,5 +55,21 @@ public class StoryPiece implements Serializable{
 
 	public void removeChoice(StoryPiece sp) {
 		this.choices.remove(sp);
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	public boolean isFixed() {
+		return fixedOrder;
+	}
+
+	public void setFixed(boolean fixedOrder) {
+		this.fixedOrder = fixedOrder;
 	}
 }

@@ -3,6 +3,7 @@ package mabufudyne.gbdesigner.core;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
+import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.swt.widgets.TableItem;
 
 import mabufudyne.gbdesigner.gui.MainWindow;
@@ -64,7 +65,7 @@ public class ExportManager {
 	}
 	
 	private void listStoryPieces() {
-		for (TableItem item : MainWindow.getInstance().getStoryPieceTableItems()) {
+		for (GridItem item : MainWindow.getInstance().getStoryPieceTableItems()) {
 			StoryPiece sp = (StoryPiece) item.getData();
 			String storyPieceOrder = item.getText(0);
 			this.HTMLContents.append(String.format("<b>%s</b>.", storyPieceOrder));

@@ -10,6 +10,7 @@ import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
+import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -116,12 +117,12 @@ public class ChoiceWindow {
 	
 	public void displayPossibleChoices() {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-		TableItem[] SPItems = MainWindow.getInstance().getStoryPieceTableItems();
+		GridItem[] SPItems = MainWindow.getInstance().getStoryPieceTableItems();
 		tableChoiceSelections.removeAll();
 		
 		// Possible choices include SPs that are not already choices or equal to the active SP
 		// Copy TableItems of eligible StoryPieces from MainWindow
-		for (TableItem item : SPItems) {
+		for (GridItem item : SPItems) {
 			StoryPiece itemSP = (StoryPiece) item.getData();
 			if (!activeSP.getChoices().contains(itemSP) && item.getData() != activeSP) {
 				TableItem choiceItem = new TableItem(tableChoiceSelections, SWT.CENTER);

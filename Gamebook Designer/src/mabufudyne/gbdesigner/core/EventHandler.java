@@ -32,7 +32,7 @@ public class EventHandler {
 	public static void deleteStoryPiece(StoryPiece sp) {
 		StoryPieceManager.getInstance().removeStoryPieceLinks(sp);
 		StoryPieceManager.getInstance().removeStoryPiece(sp);
-		MainWindow.getInstance().reorderStoryPieces(sp);
+		MainWindow.getInstance().deleteStoryPieceItem(sp);
 		
 		if (StoryPieceManager.getInstance().getActiveStoryPiece() != null) {
 			MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
@@ -150,5 +150,23 @@ public class EventHandler {
 	public static void handleActionAftermath() {
 		saveState();
 		MainWindow.getInstance().buttonCheck();
+	}
+	
+	public static void changeFixedProperty(StoryPiece sp) {
+		sp.setFixed(!sp.isFixed());
+	}
+	
+	public static void changeStoryPieceOrder(StoryPiece sp, int order) {
+		sp.setOrder(order);
+		MainWindow.getInstance().reloadUI();
+	}
+
+	public static void changeStoryPieceTitle(StoryPiece sp, String title) {
+		sp.setTitle(title);
+		MainWindow.getInstance().reloadUI();
+	}
+
+	public static void changeStoryPieceStory(StoryPiece sp, String story) {
+		sp.setStory(story);
 	}
 }

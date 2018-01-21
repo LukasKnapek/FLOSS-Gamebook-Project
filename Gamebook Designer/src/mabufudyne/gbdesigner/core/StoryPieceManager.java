@@ -10,6 +10,7 @@ public class StoryPieceManager implements Serializable {
 	 */
 	private static final long serialVersionUID = 7140106431174459518L;
 	private transient static StoryPieceManager instance = new StoryPieceManager();
+	private int maxAvailableOrder = 1;
 	private StoryPiece activeStoryPiece;
 	private ArrayList<StoryPiece> allStoryPieces = new ArrayList<StoryPiece>();
 	
@@ -49,11 +50,9 @@ public class StoryPieceManager implements Serializable {
 	}
 	/** Chooses a new active StoryPiece based on the position of the old one to be deleted */
 	private void chooseNewActiveStoryPiece(int deletedSPPosition) {
-		// If we delete the last StoryPiece, we need to set activeStoryPiece to null
-		if (allStoryPieces.size() == 1) activeStoryPiece = null;
 		// If the deleted StoryPiece is the first one, we will make the next one active
-		else if (deletedSPPosition == 0) activeStoryPiece = allStoryPieces.get(1);
-		// Otherwise just make active the StoryPiece before the deleted one
+		if (deletedSPPosition == 0) activeStoryPiece = allStoryPieces.get(1);
+		// Otherwise just make active the StoryPiece in front of the deleted one
 		else activeStoryPiece = allStoryPieces.get(deletedSPPosition-1);
 	}
 	
@@ -76,5 +75,21 @@ public class StoryPieceManager implements Serializable {
 		getInstance().setActiveStoryPiece(getActiveStoryPiece());
 		getInstance().setAllStoryPieces(getAllStoryPieces());	
 	    return getInstance();
+	}
+	
+	public boolean canRemoveStoryPieces() {
+		return allStoryPieces.size() > 1;
+	}
+	
+	public int getNextAvailableOrder() {
+		return maxAvailableOrder;
+	}
+	
+	public void incrementOrder() { 
+		maxAvailableOrder++;
+	}
+	
+	public void decrementOrder() {
+		maxAvailableOrder--;
 	}
 }

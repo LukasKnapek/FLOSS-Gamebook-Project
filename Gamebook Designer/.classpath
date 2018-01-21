@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar" sourcepath="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.linux64"/>
+	<classpathentry kind="lib" path="/home/lknapek/Downloads/repository-nebula-latest/plugins/org.eclipse.nebula.widgets.grid_1.1.0.201711021145.jar" sourcepath="/home/lknapek/Downloads/repository-nebula-latest/plugins/org.eclipse.nebula.widgets.grid.source_1.1.0.201711021145.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
