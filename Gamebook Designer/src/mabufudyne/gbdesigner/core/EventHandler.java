@@ -132,6 +132,7 @@ public class EventHandler {
 		Memento lastState = MementoManager.getInstance().getNextState();
 		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
 		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
+		StoryPieceManager.getInstance().setNextAvailableOrder(lastState.getNextAvailableOrder());
 		MainWindow.getInstance().reloadUI();
 	}
 	
@@ -139,6 +140,7 @@ public class EventHandler {
 		Memento lastState = MementoManager.getInstance().getPreviousState();
 		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
 		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
+		StoryPieceManager.getInstance().setNextAvailableOrder(lastState.getNextAvailableOrder());
 		MainWindow.getInstance().reloadUI();
 	}
 	
@@ -153,7 +155,12 @@ public class EventHandler {
 	}
 	
 	public static void changeStoryPieceOrder(StoryPiece sp, int order) {
-		sp.setOrder(order);
+		//  The new order for the SP must not be larger than the greatest current order
+		if (order > 0 && order <= StoryPieceManager.getInstance().getNextAvailableOrder()-1) {
+			StoryPieceManager.getInstance().resolveOrder(sp, order);
+			StoryPieceManager.getInstance().sortStoryPieces();
+			handleActionAftermath();
+		}
 		MainWindow.getInstance().reloadUI();
 	}
 
@@ -171,5 +178,6 @@ public class EventHandler {
 	public static void performInitialSetup() {
 		EventHandler.createNewStoryPieceAndActivate();
 		EventHandler.handleActionAftermath();
+		//handleActionAftermath();
 	}
 }

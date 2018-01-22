@@ -2,12 +2,13 @@ package mabufudyne.gbdesigner.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class StoryPieceManager implements Serializable {
 	
 	private static final long serialVersionUID = 7140106431174459518L;
 	private transient static StoryPieceManager instance = new StoryPieceManager();
-	private int maxAvailableOrder = 1;
+	private int nextAvailableOrder = 1;
 	// TODO: Order update on load/undo/redo
 	private StoryPiece activeStoryPiece;
 	private ArrayList<StoryPiece> allStoryPieces = new ArrayList<StoryPiece>();
@@ -45,6 +46,7 @@ public class StoryPieceManager implements Serializable {
 	public void removeStoryPiece(StoryPiece sp) {
 		chooseNewActiveStoryPiece(allStoryPieces.indexOf(sp));
 		allStoryPieces.remove(sp);
+		decrementOrder();
 	}
 	/** Chooses a new active StoryPiece based on the position of the old one to be deleted */
 	private void chooseNewActiveStoryPiece(int deletedSPPosition) {
@@ -54,6 +56,19 @@ public class StoryPieceManager implements Serializable {
 		else if (deletedSPPosition == allStoryPieces.size()-1) activeStoryPiece = allStoryPieces.get(deletedSPPosition-1);
 		// Otherwise just make active the StoryPiece that follows the deleted StoryPiece
 		else activeStoryPiece = allStoryPieces.get(deletedSPPosition+1);
+	}
+	
+	// TODO: Finish this
+	public void resolveStoryPieceOrdering() {
+		int maxOrder = nextAvailableOrder - 1;
+		int order = 1;
+		
+		for (StoryPiece sp : allStoryPieces) {
+			if (sp.getOrder() != order) {}
+			else {
+				order++;
+			}
+		}
 	}
 	
 	public void addChoice(StoryPiece sp) {
@@ -75,15 +90,33 @@ public class StoryPieceManager implements Serializable {
 	}
 	
 	public int getNextAvailableOrder() {
-		return maxAvailableOrder;
+		return nextAvailableOrder;
+	}
+	
+	public void setNextAvailableOrder(int order) {
+		nextAvailableOrder = order;
 	}
 	
 	public void incrementOrder() { 
-		maxAvailableOrder++;
+		nextAvailableOrder++;
 	}
 	
 	public void decrementOrder() {
-		maxAvailableOrder--;
+		nextAvailableOrder--;
+	}
+
+	// If an SP is set to have order another SP has, switches the order of these SPs
+	public void resolveOrder(StoryPiece SPNew, int order) {
+		for (StoryPiece SPOld : allStoryPieces) {
+			if (SPOld.getOrder() == order) {
+				SPOld.setOrder(SPNew.getOrder());
+				SPNew.setOrder(order);
+			}
+		}
+	}
+	
+	public void sortStoryPieces() {
+		Collections.sort(allStoryPieces);
 	}
 
 

@@ -2,9 +2,10 @@ package mabufudyne.gbdesigner.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class StoryPiece implements Serializable{
+public class StoryPiece implements Serializable, Comparable {
 	/**
 	 * 
 	 */
@@ -71,5 +72,15 @@ public class StoryPiece implements Serializable{
 
 	public void setFixed(boolean fixedOrder) {
 		this.fixedOrder = fixedOrder;
+	}
+
+	@Override
+	public int compareTo(Object other) {
+		StoryPiece otherSP = (StoryPiece) other;
+		int sp1Order = this.getOrder();
+		int sp2Order = otherSP.getOrder();
+		if (sp1Order == sp2Order) return 0;
+		else if (sp1Order < sp2Order) return -1;
+		else return 1;
 	}
 }

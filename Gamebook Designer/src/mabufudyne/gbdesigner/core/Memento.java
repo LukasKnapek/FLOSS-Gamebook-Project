@@ -6,11 +6,13 @@ public class Memento {
 	
 	private ArrayList<StoryPiece> allStoryPieces;
 	private StoryPiece activeStoryPiece;
+	private int nextAvailableOrder;
 	
 	public Memento() {
 		StoryPieceManager currentManager = StoryPieceManager.getInstance();
 		ArrayList<StoryPiece> storyPieces = (ArrayList<StoryPiece>) Utils.deepCopyObject(currentManager.getAllStoryPieces());
 		int activeStoryPiecePosition = currentManager.getAllStoryPieces().indexOf(currentManager.getActiveStoryPiece());
+		nextAvailableOrder = currentManager.getNextAvailableOrder();
 		try {
 			this.activeStoryPiece = storyPieces.get(activeStoryPiecePosition);
 		}
@@ -35,5 +37,9 @@ public class Memento {
 
 	public void setAllStoryPieces(ArrayList<StoryPiece> allStoryPieces) {
 		this.allStoryPieces = allStoryPieces;
+	}
+	
+	public int getNextAvailableOrder() {
+		return nextAvailableOrder;
 	}
 }
