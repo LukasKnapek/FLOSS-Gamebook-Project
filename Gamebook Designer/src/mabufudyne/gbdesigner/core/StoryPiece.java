@@ -22,7 +22,6 @@ public class StoryPiece implements Serializable, Comparable {
 		this.title = "Untitled";
 		this.story = "";
 		this.order = StoryPieceManager.getInstance().getNextAvailableOrder();
-		StoryPieceManager.getInstance().incrementOrder();
 		this.fixedOrder = false;
 		this.choices = new ArrayList<StoryPiece>();
 	}

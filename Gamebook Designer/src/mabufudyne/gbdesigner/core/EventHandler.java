@@ -130,17 +130,13 @@ public class EventHandler {
 	
 	public static void redo() {
 		Memento lastState = MementoManager.getInstance().getNextState();
-		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
-		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
-		StoryPieceManager.getInstance().setNextAvailableOrder(lastState.getNextAvailableOrder());
+		StoryPieceManager.replaceManager(lastState.getManagerMemento());
 		MainWindow.getInstance().reloadUI();
 	}
 	
 	public static void undo() {
 		Memento lastState = MementoManager.getInstance().getPreviousState();
-		StoryPieceManager.getInstance().setAllStoryPieces(lastState.getAllStoryPieces());
-		StoryPieceManager.getInstance().setActiveStoryPiece(lastState.getActiveStoryPiece());
-		StoryPieceManager.getInstance().setNextAvailableOrder(lastState.getNextAvailableOrder());
+		StoryPieceManager.replaceManager(lastState.getManagerMemento());
 		MainWindow.getInstance().reloadUI();
 	}
 	
@@ -179,5 +175,16 @@ public class EventHandler {
 		EventHandler.createNewStoryPieceAndActivate();
 		EventHandler.handleActionAftermath();
 		//handleActionAftermath();
+	}
+
+
+	public static void randomizeStoryPieceOrder() {
+		StoryPieceManager.getInstance().randomizeOrder();
+		MainWindow.getInstance().reloadUI();
+	}
+	
+	public static void sortStoryPieces() {
+		StoryPieceManager.getInstance().sortStoryPieces();
+		MainWindow.getInstance().reloadUI();
 	}
 }

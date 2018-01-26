@@ -6,9 +6,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,13 +26,10 @@ import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
-import org.eclipse.nebula.widgets.grid.GridColumnGroup;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.GridColumn;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionListener;
-import java.util.function.Consumer;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -107,7 +101,6 @@ public class MainWindow {
 		shell.setSize(450, 300);
 		shell.setText("SWT Application");
 		shell.setLayout(new GridLayout(1, false));
-		
 		
 		
 		ToolBar mainToolBar = new ToolBar(shell, SWT.FLAT | SWT.RIGHT);
@@ -205,7 +198,8 @@ public class MainWindow {
 			public void focusLost(FocusEvent e) {
 				String newTitle = textTitle.getText();
 				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-				
+				System.out.println("Focus lost");
+				System.out.println(newTitle);
 				EventHandler.changeStoryPieceTitle(activeSP, newTitle);
 			}
 		});
@@ -352,6 +346,8 @@ public class MainWindow {
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				// Lose data fields focus to trigger save of SP details
+				shell.forceFocus();
 				EventHandler.createNewStoryPieceAndActivate();
 			}
 		});
@@ -369,6 +365,24 @@ public class MainWindow {
 			}
 		});
 		tItemRemoveStoryPiece.setText("-");
+		
+		ToolItem tItemRandomize = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRandomize.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.randomizeStoryPieceOrder();
+			}
+		});
+		tItemRandomize.setText("R");
+		
+		ToolItem tItemSort = new ToolItem(sideToolBar, SWT.NONE);
+		tItemSort.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.sortStoryPieces();
+			}
+		});
+		tItemSort.setText("S");
 		sashMain.setWeights(new int[] {2, 1});
 
 	}
