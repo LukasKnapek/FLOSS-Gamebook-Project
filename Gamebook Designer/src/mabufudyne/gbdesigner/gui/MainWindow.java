@@ -11,6 +11,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -33,6 +34,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.widgets.Button;
 
 public class MainWindow {
 
@@ -40,7 +42,6 @@ public class MainWindow {
 	protected Shell shell;
 	private Text textTitle;
 	private Text textStory;
-	private Table tableChoices;
 	private Grid gridStoryPieces;
 	private ToolItem tItemAddStoryPiece;
 	private ToolItem tItemRemoveStoryPiece;
@@ -53,6 +54,9 @@ public class MainWindow {
 	private GridColumn gColOrder;
 	private GridColumn gColTitle;
 	private Spinner spinOrder;
+	private Text textChoiceText;
+	private Table tableChoices;
+	private Button btnSaveChoiceText;
 
 	/**
 	 * Launch the application.
@@ -198,8 +202,6 @@ public class MainWindow {
 			public void focusLost(FocusEvent e) {
 				String newTitle = textTitle.getText();
 				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-				System.out.println("Focus lost");
-				System.out.println(newTitle);
 				EventHandler.changeStoryPieceTitle(activeSP, newTitle);
 			}
 		});
@@ -225,31 +227,36 @@ public class MainWindow {
 		textStory.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		Composite cChoices = new Composite(sashFields, SWT.NONE);
-		cChoices.setLayout(new GridLayout(2, false));
+		cChoices.setLayout(new GridLayout(3, false));
 		
 		Label lblNewLabel = new Label(cChoices, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 		lblNewLabel.setText("Choices");
-		new Label(cChoices, SWT.NONE);
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
 		tableChoices.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				StoryPiece selectedChoice = (StoryPiece) tableChoices.getSelection()[0].getData();
+				displayChoiceText(selectedChoice);
 				buttonCheck();
 			}
 		});
-		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		tableChoices.setHeaderVisible(true);
 		tableChoices.setLinesVisible(true);
+		tableChoices.setHeaderVisible(true);
+		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
-		TableColumn tblclmnChoiceNumber = new TableColumn(tableChoices, SWT.CENTER);
-		tblclmnChoiceNumber.setWidth(30);
-		tblclmnChoiceNumber.setText("#");
+		TableColumn tableColumn = new TableColumn(tableChoices, SWT.CENTER);
+		tableColumn.setWidth(30);
+		tableColumn.setText("#");
 		
-		TableColumn tblclmnChoiceTitle = new TableColumn(tableChoices, SWT.NONE);
-		tblclmnChoiceTitle.setWidth(100);
-		tblclmnChoiceTitle.setText("StoryPiece");
+		TableColumn tableColumn_1 = new TableColumn(tableChoices, SWT.NONE);
+		tableColumn_1.setWidth(100);
+		tableColumn_1.setText("StoryPiece");
+		
+		TableColumn tableColumn_2 = new TableColumn(tableChoices, SWT.NONE);
+		tableColumn_2.setWidth(200);
+		tableColumn_2.setText("Choice Text");
 		
 		ToolBar choiceToolBar = new ToolBar(cChoices, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
 		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
@@ -269,10 +276,29 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				StoryPiece choice = (StoryPiece) tableChoices.getSelection()[0].getData();
-				EventHandler.removeChoice(choice);
+				int choiceIndex = tableChoices.getSelectionIndex();
+				EventHandler.removeChoice(choice, choiceIndex);
 			}
 		});
 		tItemRemoveChoice.setText("-");
+		
+		Label lblNewLabel_2 = new Label(cChoices, SWT.NONE);
+		lblNewLabel_2.setText("Choice Text");
+		
+		textChoiceText = new Text(cChoices, SWT.BORDER);
+		textChoiceText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		btnSaveChoiceText = new Button(cChoices, SWT.NONE);
+		btnSaveChoiceText.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				StoryPiece selectedChoice = (StoryPiece) tableChoices.getSelection()[0].getData();
+				String newChoiceText = textChoiceText.getText();
+				EventHandler.changeChoiceText(selectedChoice, newChoiceText, tableChoices.getSelectionIndex());
+				tableChoices.select(tableChoices.getSelectionIndex());
+			}
+		});
+		btnSaveChoiceText.setText("Save");
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
 		Composite cViews = new Composite(sashMain, SWT.NONE);
@@ -300,7 +326,7 @@ public class MainWindow {
 				else {
 					StoryPiece sp = (StoryPiece) e.item.getData();
 					EventHandler.changeActiveStoryPiece(sp);
-					displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+					displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 				}
 			}
 		});
@@ -387,7 +413,6 @@ public class MainWindow {
 
 	}
 	
-	
 
 	public void displayStoryPieceItem(StoryPiece displayedSP) {
 		GridItem item = new GridItem(gridStoryPieces, SWT.CENTER);
@@ -400,23 +425,31 @@ public class MainWindow {
 		item.setBackground(gridStoryPieces.getBackground());
 	}
 	
-	public void displayStoryPieceContents(StoryPiece displayedSP) {
-		GridItem[] spItems = getStoryPieceTableItems();
-
+	public void displayStoryPieceContents(StoryPiece displayedSP, int activeChoiceIndex) {
 		spinOrder.setSelection(displayedSP.getOrder());
 		textTitle.setText(displayedSP.getTitle());
 		textStory.setText(displayedSP.getStory());
 		
 		tableChoices.removeAll();
-		for (GridItem spItem : spItems) {
-			StoryPiece sp = (StoryPiece) spItem.getData();
-			if (displayedSP.getChoices().contains(sp)) {
-				TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
-				choiceItem.setData(sp);
-				choiceItem.setText(0, spItem.getText(0));
-				choiceItem.setText(1, spItem.getText(1));
-			}
+		displayStoryPieceChoices(displayedSP, activeChoiceIndex);
+	}
+	
+	public void displayStoryPieceChoices(StoryPiece displayedSP, int activeChoiceIndex) {
+		for (StoryPiece choice : displayedSP.getChoicesTexts().keySet()) {
+			TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
+			String choiceText = displayedSP.getChoicesTexts().get(choice);
+			choiceItem.setData(choice);
+			choiceItem.setText(0, "" + choice.getOrder());
+			choiceItem.setText(1, choice.getTitle());
+			choiceItem.setText(2, choiceText);
 		}
+		
+		if (tableChoices.getItemCount() > 0) {
+			tableChoices.select(activeChoiceIndex);
+			tableChoices.notifyListeners(SWT.Selection, new Event());
+		}
+		//gridStoryPieces.forceFocus();
+		//tableChoices.forceFocus();
 	}
 
 	public void removeStoryPieceItem(StoryPiece sp) {
@@ -438,9 +471,13 @@ public class MainWindow {
 		
 		if (tableChoices.getItemCount() > 0 && tableChoices.getSelection().length != 0) {
 			tItemRemoveChoice.setEnabled(true);
+			btnSaveChoiceText.setEnabled(true);
+			textChoiceText.setEnabled(true);
 		}
 		else {
 			tItemRemoveChoice.setEnabled(false);
+			btnSaveChoiceText.setEnabled(false);
+			textChoiceText.setEnabled(false);
 		}
 		
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
@@ -513,9 +550,14 @@ public class MainWindow {
 			displayStoryPieceItem(sp);
 			if (sp == StoryPieceManager.getInstance().getActiveStoryPiece()) {
 				highlightActiveStoryPiece();
-				displayStoryPieceContents(sp);
+				displayStoryPieceContents(sp, 0);
 			}
 		}
+	}
+	
+	public void displayChoiceText(StoryPiece choice) {
+		String choiceText = StoryPieceManager.getInstance().getActiveStoryPiece().getChoicesTexts().get(choice);
+		textChoiceText.setText(choiceText);
 	}
 }
 

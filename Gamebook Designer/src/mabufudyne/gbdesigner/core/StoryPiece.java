@@ -1,11 +1,9 @@
 package mabufudyne.gbdesigner.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
 
-public class StoryPiece implements Serializable, Comparable {
+public class StoryPiece implements Serializable, Comparable<Object> {
 	/**
 	 * 
 	 */
@@ -14,7 +12,7 @@ public class StoryPiece implements Serializable, Comparable {
 	private boolean fixedOrder;
 	private String title;
 	private String story;
-	private ArrayList<StoryPiece> choices;
+	private HashMap<StoryPiece, String> choicesTexts;
 	
 	/* Constructors */
 	
@@ -23,18 +21,20 @@ public class StoryPiece implements Serializable, Comparable {
 		this.story = "";
 		this.order = StoryPieceManager.getInstance().getNextAvailableOrder();
 		this.fixedOrder = false;
-		this.choices = new ArrayList<StoryPiece>();
+		this.choicesTexts = new HashMap<StoryPiece, String>();
+		
 	}
 
 	/* Getters and Setters */
 	
 	
-	public List<StoryPiece> getChoices() {
-		return choices;
-	}
 
 	public String getTitle() {
 		return title;
+	}
+
+	public HashMap<StoryPiece, String> getChoicesTexts() {
+		return choicesTexts;
 	}
 
 	public void setTitle(String title) {
@@ -50,11 +50,11 @@ public class StoryPiece implements Serializable, Comparable {
 	}
 	
 	public void addChoice(StoryPiece sp) {
-		this.choices.add(sp);
+		this.choicesTexts.put(sp, "Go to");
 	}
 
 	public void removeChoice(StoryPiece sp) {
-		this.choices.remove(sp);
+		this.choicesTexts.remove((Object) sp); 
 	}
 
 	public int getOrder() {

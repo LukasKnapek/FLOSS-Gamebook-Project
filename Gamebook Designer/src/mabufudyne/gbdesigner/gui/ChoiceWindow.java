@@ -10,7 +10,8 @@ import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
-import org.eclipse.nebula.widgets.grid.GridItem;
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -111,27 +112,27 @@ public class ChoiceWindow {
 	
 	public void displayPossibleChoices() {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-		GridItem[] SPItems = MainWindow.getInstance().getStoryPieceTableItems();
-		tableChoiceSelections.removeAll();
+		ArrayList<StoryPiece> allStoryPieces = StoryPieceManager.getInstance().getAllStoryPieces();
 		
 		// Possible choices include SPs that are not already choices or equal to the active SP
-		// Copy TableItems of eligible StoryPieces from MainWindow
-		for (GridItem item : SPItems) {
-			StoryPiece itemSP = (StoryPiece) item.getData();
-			if (!activeSP.getChoices().contains(itemSP) && item.getData() != activeSP) {
+		for (StoryPiece sp : allStoryPieces) {
+			if (!activeSP.getChoicesTexts().containsKey(sp) && sp != activeSP) {
 				TableItem choiceItem = new TableItem(tableChoiceSelections, SWT.CENTER);
-				choiceItem.setText(0, item.getText(0));
-				choiceItem.setText(1, item.getText(1));
-				choiceItem.setData(item.getData());
+				choiceItem.setData(sp);
+				choiceItem.setText(0, "" + sp.getOrder());
+				choiceItem.setText(1, sp.getTitle());
 			}
+			
 		}
 		
+		// Possibility to create a new StoryPiece and add it as a choice
 		TableItem item = new TableItem(tableChoiceSelections, SWT.CENTER);
+		item.setData(null);
 		item.setText(0, "");
 		item.setText(1, "--- New StoryPiece ---");
 	}
 	
-	public static ChoiceWindow getInstance() {
+	public static ChoiceWindow getInstance() {	
 		return instance;
 	}
 }

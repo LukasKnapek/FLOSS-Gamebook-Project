@@ -1,7 +1,5 @@
 package mabufudyne.gbdesigner.core;
 
-import java.util.ArrayList;
-
 public class Memento {
 	
 	private StoryPieceManager managerMemento;

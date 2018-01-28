@@ -3,11 +3,6 @@ package mabufudyne.gbdesigner.core;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-import org.eclipse.nebula.widgets.grid.GridItem;
-import org.eclipse.swt.widgets.TableItem;
-
-import mabufudyne.gbdesigner.gui.MainWindow;
-
 public class ExportManager {
 	
 	private StringBuilder HTMLContents;
@@ -63,21 +58,24 @@ public class ExportManager {
 			this.HTMLContents.append("</br>\n");
 		}
 	}
+	// TODO: Make ExportManager take SP order from Model, not View
 	
 	private void listStoryPieces() {
-		for (GridItem item : MainWindow.getInstance().getStoryPieceTableItems()) {
-			StoryPiece sp = (StoryPiece) item.getData();
-			String storyPieceOrder = item.getText(0);
-			this.HTMLContents.append(String.format("<b>%s</b>.", storyPieceOrder));
+		StoryPieceManager.getInstance().sortStoryPieces();
+		//<a name="anchor"></a>
+		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {
+			this.HTMLContents.append(String.format("<b><a name=\"%s\">%s.</a></b>", sp.getOrder(), sp.getOrder()));
 			addNewLines(1);
 			this.HTMLContents.append(sp.getStory());
 			addNewLines(2);
-			for (StoryPiece choiceSP : sp.getChoices()) {
-				// TODO: Make ExportManager take SP order from Model, not View
-				//this.HTMLContents.append(String.format("<i>   %s ... %s</i>", choiceSP.getTitle(), MainWindow.getInstance().getStoryPieceViewOrder(choiceSP)));
+			
+			for (StoryPiece choice : sp.getChoicesTexts().keySet()) {
+				String choiceText = sp.getChoicesTexts().get(choice);
+				this.HTMLContents.append(String.format("%s ... <i><a href=#%s>%s</a></i>", choiceText, choice.getOrder(), choice.getOrder()));
 				addNewLines(1);
 			}
 			addNewLines(1);
+
 		}
 	}
 }

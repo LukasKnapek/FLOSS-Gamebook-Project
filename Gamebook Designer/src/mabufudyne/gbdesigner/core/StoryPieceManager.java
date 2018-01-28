@@ -58,7 +58,6 @@ public class StoryPieceManager implements Serializable {
 		StoryPiece sp = new StoryPiece();
 		allStoryPieces.add(sp);
 		storyPieceOrders.add(sp.getOrder());
-		System.out.println(storyPieceOrders.toString() + "-" + maxOrder);
 		return sp;
 	}
 	
@@ -67,7 +66,6 @@ public class StoryPieceManager implements Serializable {
 		allStoryPieces.remove(sp);
 		storyPieceOrders.remove((Object) sp.getOrder());
 		if (sp.getOrder() == maxOrder) decrementOrder();
-		System.out.println(storyPieceOrders.toString() + "-" + maxOrder);
 	}
 	/** Chooses a new active StoryPiece based on the position of the old one to be deleted */
 	private void chooseNewActiveStoryPiece(int deletedSPPosition) {
@@ -89,7 +87,7 @@ public class StoryPieceManager implements Serializable {
 
 	public void removeStoryPieceLinks(StoryPiece choice) {
 		for (StoryPiece sp : allStoryPieces) {
-			if (sp.getChoices().contains(choice)) sp.removeChoice(choice);
+			if (sp.getChoicesTexts().containsKey(choice)) sp.removeChoice(choice);
 		}
 	}
 	
@@ -98,7 +96,6 @@ public class StoryPieceManager implements Serializable {
 	}
 	
 	public int getNextAvailableOrder() {
-		System.out.println("called");
 		for (int i=1; i<=maxOrder; i++) {
 			if (!storyPieceOrders.contains(i)) {
 				return i;
@@ -133,7 +130,7 @@ public class StoryPieceManager implements Serializable {
 
 	public void randomizeOrder() {
 		Random rnd = new Random();
-		ArrayList<Integer> orders = new ArrayList();
+		ArrayList<Integer> orders = new ArrayList<Integer>();
 		for (StoryPiece sp : allStoryPieces) {
 			if (!sp.isFixed()) orders.add(sp.getOrder());
 		}

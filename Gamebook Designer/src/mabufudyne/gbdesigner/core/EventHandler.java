@@ -41,7 +41,7 @@ public class EventHandler {
 		// Highlight the new active SP and display its contents
 		MainWindow.getInstance().clearFields();
 		MainWindow.getInstance().highlightActiveStoryPiece();
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 		
 		handleActionAftermath();
 	}
@@ -50,14 +50,14 @@ public class EventHandler {
 		// Change active SP, highlight it in the grid and display its contents
 		StoryPieceManager.getInstance().setActiveStoryPiece(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
-		MainWindow.getInstance().displayStoryPieceContents(sp);
+		MainWindow.getInstance().displayStoryPieceContents(sp, 0);
 	}
 	
 	// Display choice selection window, save state once user finished working with it
 	public static void displayChoiceSelectionWindow() {
 		ChoiceWindow.getInstance().open();
 		// Update active SP in view (we might have added choices)
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 		handleActionAftermath();
 	}
 	
@@ -67,10 +67,11 @@ public class EventHandler {
 		ChoiceWindow.getInstance().removeChoiceFromView(choice);
 	}
 	
-	public static void removeChoice(StoryPiece choice) {
+	public static void removeChoice(StoryPiece choice, int choiceIndex) {
 		StoryPieceManager.getInstance().removeChoice(choice);
 		// Update active SP in view (we removed a choice)
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece());
+		if (choiceIndex != 0) choiceIndex = choiceIndex - 1;
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), choiceIndex);
 		MainWindow.getInstance().buttonCheck();
 	}
 	
@@ -174,9 +175,7 @@ public class EventHandler {
 	public static void performInitialSetup() {
 		EventHandler.createNewStoryPieceAndActivate();
 		EventHandler.handleActionAftermath();
-		//handleActionAftermath();
 	}
-
 
 	public static void randomizeStoryPieceOrder() {
 		StoryPieceManager.getInstance().randomizeOrder();
@@ -187,4 +186,12 @@ public class EventHandler {
 		StoryPieceManager.getInstance().sortStoryPieces();
 		MainWindow.getInstance().reloadUI();
 	}
+	
+	public static void changeChoiceText(StoryPiece choice, String text, int choiceIndex) {
+		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
+		activeSP.getChoicesTexts().replace(choice, text);
+		MainWindow.getInstance().displayStoryPieceContents(activeSP, choiceIndex);
+		handleActionAftermath();
+	}
+
 }
