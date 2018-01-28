@@ -10,9 +10,9 @@ import mabufudyne.gbdesigner.gui.MainWindow;
 
 public class EventHandler {
 	
-	private static String lastSaveLocation;
-	private static String lastFileName;
-	private static String lastLoadLocation;
+	
+	public static String lastFileLocation;
+	public static String lastFileName;
 	
 	// Create new SP, save state and return the SP
 	public static StoryPiece createNewStoryPieceAndActivate() {
@@ -75,8 +75,11 @@ public class EventHandler {
 		MainWindow.getInstance().buttonCheck();
 	}
 	
-	public static void saveAdventure() {
-		String savePath = MainWindow.getInstance().invokeSaveDialog(lastSaveLocation);
+	public static void saveAdventure(boolean quickSave) {
+		String savePath = "";
+		if (quickSave) savePath = lastFileLocation + lastFileName;
+		else savePath = MainWindow.getInstance().invokeSaveDialog(lastFileLocation);
+
 		if (savePath != null) {
 			try {
 				FileOutputStream fOut = new FileOutputStream(savePath);
@@ -85,18 +88,19 @@ public class EventHandler {
 				out.close();
 				fOut.close();
 				
-				lastSaveLocation = savePath.substring(0, savePath.lastIndexOf("/"));
+				lastFileLocation = savePath.substring(0, savePath.lastIndexOf("/"));
 				lastFileName = savePath.substring(savePath.lastIndexOf("/"));
 				
-				System.out.println(lastSaveLocation + " " + lastFileName);
+				System.out.println("Saved to: " + lastFileLocation + lastFileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		MainWindow.getInstance().buttonCheck();
 	}
 	
 	public static void loadAdventure() { 
-		String loadPath = MainWindow.getInstance().invokeLoadDialog(lastLoadLocation);
+		String loadPath = MainWindow.getInstance().invokeLoadDialog(lastFileLocation);
 		if (loadPath != null) {
 			try {
 				FileInputStream fIn = new FileInputStream(loadPath);
@@ -111,13 +115,17 @@ public class EventHandler {
 					MainWindow.getInstance().reloadUI();
 				}
 				
-				lastLoadLocation = loadPath.substring(0, loadPath.lastIndexOf("/"));
+				lastFileLocation = loadPath.substring(0, loadPath.lastIndexOf("/"));
+				lastFileName = loadPath.substring(loadPath.lastIndexOf("/"));
+
+				System.out.println("Loaded from: " + lastFileLocation + lastFileName);
 
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		MainWindow.getInstance().buttonCheck();
 	}
 	
 	public static void exportAdventure() {

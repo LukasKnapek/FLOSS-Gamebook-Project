@@ -58,7 +58,6 @@ public class ExportManager {
 			this.HTMLContents.append("</br>\n");
 		}
 	}
-	// TODO: Make ExportManager take SP order from Model, not View
 	
 	private void listStoryPieces() {
 		StoryPieceManager.getInstance().sortStoryPieces();

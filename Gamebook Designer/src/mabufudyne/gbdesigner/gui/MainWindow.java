@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Button;
 public class MainWindow {
 
 	private static MainWindow instance = new MainWindow();
-	protected Shell shell;
+	protected Shell shlGamebookDesigner;
 	private Text textTitle;
 	private Text textStory;
 	private Grid gridStoryPieces;
@@ -57,6 +57,7 @@ public class MainWindow {
 	private Text textChoiceText;
 	private Table tableChoices;
 	private Button btnSaveChoiceText;
+	private ToolItem tItemQuickSave;
 
 	/**
 	 * Launch the application.
@@ -85,9 +86,9 @@ public class MainWindow {
 		// Create an initial StoryPiece
 		EventHandler.performInitialSetup();
 		
-		shell.open();
-		shell.layout();
-		while (!shell.isDisposed()) {
+		shlGamebookDesigner.open();
+		shlGamebookDesigner.layout();
+		while (!shlGamebookDesigner.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -99,35 +100,47 @@ public class MainWindow {
 	 */
 	protected void createContents() {
 		
-		shell = new Shell();
-		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/img_checkbox_checked.png"));
-		shell.setMinimumSize(new Point(700, 550));
-		shell.setSize(450, 300);
-		shell.setText("SWT Application");
-		shell.setLayout(new GridLayout(1, false));
+		shlGamebookDesigner = new Shell();
+		shlGamebookDesigner.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/img_checkbox_checked.png"));
+		shlGamebookDesigner.setMinimumSize(new Point(700, 550));
+		shlGamebookDesigner.setSize(450, 300);
+		shlGamebookDesigner.setText("Gamebook Designer");
+		shlGamebookDesigner.setLayout(new GridLayout(1, false));
 		
 		
-		ToolBar mainToolBar = new ToolBar(shell, SWT.FLAT | SWT.RIGHT);
-		GridData gd_mainToolBar = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_mainToolBar.horizontalIndent = 5;
-		mainToolBar.setLayoutData(gd_mainToolBar);
+		ToolBar mainToolBar = new ToolBar(shlGamebookDesigner, SWT.FLAT | SWT.RIGHT);
+		mainToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
+		tItemNew.setToolTipText("Create a new StoryPiece");
+		tItemNew.setWidth(35);
 		tItemNew.setText("New");
 		
-		ToolItem tItemQuickSave = new ToolItem(mainToolBar, SWT.NONE);
+		tItemQuickSave = new ToolItem(mainToolBar, SWT.NONE);
+		tItemQuickSave.setToolTipText("Save to the last loaded/saved file");
+		tItemQuickSave.setWidth(35);
+		tItemQuickSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.saveAdventure(true);
+			}
+		});
 		tItemQuickSave.setText("Save");
 		
 		ToolItem tltmSaveAs = new ToolItem(mainToolBar, SWT.NONE);
+		tltmSaveAs.setToolTipText("Save as a new file");
+		tltmSaveAs.setWidth(35);
 		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.saveAdventure();
+				EventHandler.saveAdventure(false);
 			}
 		});
 		tltmSaveAs.setText("Save As");
 		
 		ToolItem tltmLoad = new ToolItem(mainToolBar, SWT.NONE);
+		tltmLoad.setToolTipText("Load Adventure from a file");
+		tltmLoad.setWidth(35);
 		tltmLoad.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -137,6 +150,8 @@ public class MainWindow {
 		tltmLoad.setText("Load");
 		
 		tItemUndo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemUndo.setToolTipText("Undo action");
+		tItemUndo.setWidth(35);
 		tItemUndo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -147,6 +162,8 @@ public class MainWindow {
 		tItemUndo.setText("Undo");
 		
 		tItemRedo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemRedo.setToolTipText("Redo action");
+		tItemRedo.setWidth(35);
 		tItemRedo.setSelection(true);
 		tItemRedo.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -158,6 +175,8 @@ public class MainWindow {
 		tItemRedo.setText("Redo");
 		
 		ToolItem tItemExport = new ToolItem(mainToolBar, SWT.NONE);
+		tItemExport.setToolTipText("Export Adventure to an HTML file");
+		tItemExport.setWidth(35);
 		tItemExport.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -166,7 +185,7 @@ public class MainWindow {
 		});
 		tItemExport.setText("Export");
 		
-		SashForm sashMain = new SashForm(shell, SWT.NONE);
+		SashForm sashMain = new SashForm(shlGamebookDesigner, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		SashForm sashFields = new SashForm(sashMain, SWT.VERTICAL);
@@ -262,6 +281,7 @@ public class MainWindow {
 		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		
 		tItemAddChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemAddChoice.setToolTipText("Add a new choice");
 		tItemAddChoice.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -272,6 +292,7 @@ public class MainWindow {
 		tItemAddChoice.setText("+");
 		
 		tItemRemoveChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemRemoveChoice.setToolTipText("Remove the selected choice");
 		tItemRemoveChoice.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -289,6 +310,7 @@ public class MainWindow {
 		textChoiceText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		btnSaveChoiceText = new Button(cChoices, SWT.NONE);
+		btnSaveChoiceText.setToolTipText("Save as the current choice text");
 		btnSaveChoiceText.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -313,7 +335,7 @@ public class MainWindow {
 		
 		Label lblOverview = new Label(cOverview, SWT.NONE);
 		lblOverview.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-		lblOverview.setText("Overview");
+		lblOverview.setText("StoryPiece Overview");
 		
 		gridStoryPieces = new Grid(cOverview, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
 		gridStoryPieces.addSelectionListener(new SelectionAdapter() {
@@ -345,6 +367,7 @@ public class MainWindow {
 		gridStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		gColOrder = new GridColumn(gridStoryPieces, SWT.CENTER);
+		gColOrder.setHeaderTooltip("Order of the StoryPiece");
 		gColOrder.setSummary(false);
 		gColOrder.setDetail(false);
 		gColOrder.setMoveable(true);
@@ -352,6 +375,7 @@ public class MainWindow {
 		gColOrder.setWidth(30);
 		
 		gColTitle = new GridColumn(gridStoryPieces, SWT.CENTER);
+		gColTitle.setHeaderTooltip("StoryPiece title");
 		gColTitle.setDetail(false);
 		gColTitle.setSummary(false);
 		gColTitle.setMoveable(true);
@@ -359,6 +383,7 @@ public class MainWindow {
 		gColTitle.setWidth(100);
 		
 		gColFixed = new GridColumn(gridStoryPieces, SWT.CHECK | SWT.CENTER);
+		gColFixed.setHeaderTooltip("Determines if the StoryPiece order should be randomized when the randomization function is used");
 		gColFixed.setMinimumWidth(50);
 		gColFixed.setDetail(false);
 		gColFixed.setSummary(false);
@@ -373,14 +398,15 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// Lose data fields focus to trigger save of SP details
-				shell.forceFocus();
+				shlGamebookDesigner.forceFocus();
 				EventHandler.createNewStoryPieceAndActivate();
 			}
 		});
-		tItemAddStoryPiece.setToolTipText("Create a new Story Piece");
+		tItemAddStoryPiece.setToolTipText("Create a new StoryPiece");
 		tItemAddStoryPiece.setText("+");
 		
 		tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRemoveStoryPiece.setToolTipText("Remove the selected StoryPiece");
 		tItemRemoveStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -393,6 +419,7 @@ public class MainWindow {
 		tItemRemoveStoryPiece.setText("-");
 		
 		ToolItem tItemRandomize = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRandomize.setToolTipText("Randomize StoryPiece order (except for fixed StoryPieces)");
 		tItemRandomize.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -402,6 +429,7 @@ public class MainWindow {
 		tItemRandomize.setText("R");
 		
 		ToolItem tItemSort = new ToolItem(sideToolBar, SWT.NONE);
+		tItemSort.setToolTipText("Sort StoryPieces by order");
 		tItemSort.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -480,6 +508,7 @@ public class MainWindow {
 			textChoiceText.setEnabled(false);
 		}
 		
+		tItemQuickSave.setEnabled(EventHandler.lastFileLocation != null);
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
 		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
 		
@@ -512,7 +541,7 @@ public class MainWindow {
 	}
 
 	public String invokeSaveDialog(String path) {
-		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		FileDialog dialog = new FileDialog(shlGamebookDesigner, SWT.SAVE);
 		dialog.setFilterNames(new String[] { "Adventure Files"} );
 		dialog.setFilterExtensions(new String[] {"*.adv"} );
 		dialog.setFilterPath(path);
@@ -524,7 +553,7 @@ public class MainWindow {
 	}
 
 	public String invokeLoadDialog(String path) {
-		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		FileDialog dialog = new FileDialog(shlGamebookDesigner, SWT.OPEN);
 		dialog.setFilterNames(new String[] { "Adventure Files"} );
 		dialog.setFilterExtensions(new String[] {"*.adv"} );
 		dialog.setFilterPath(path);
@@ -534,7 +563,7 @@ public class MainWindow {
 	}
 	
 	public String invokeExportDialog() {
-		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+		FileDialog dialog = new FileDialog(shlGamebookDesigner, SWT.SAVE);
 		dialog.setFilterNames(new String[] { "HTML Files"} );
 		dialog.setFilterExtensions(new String[] {"*.html"} );
 		dialog.setFileName("Adventure.html");
