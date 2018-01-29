@@ -27,12 +27,6 @@ public class MementoManager {
 		//System.out.println("Index - " + iteratorPosition + ": Array indices - 0-" + (history.size()-1));
 	}
 	
-	public void saveInitialState() {
-		Memento newState = new Memento();
-		history.add(newState);
-		//System.out.println("Index - " + iteratorPosition + ": Array indices - 0-" + (history.size()-1));
-	}
-	
 	public Memento getPreviousState() {
 		iteratorPosition--;
 		//System.out.println("Index - " + iteratorPosition + ": Array indices - 0-" + (history.size()-1));
@@ -57,5 +51,9 @@ public class MementoManager {
 
 	}
 	
+	public void revertToDefault() {
+		history.clear();
+		iteratorPosition = 0;
+	}
 	
 }

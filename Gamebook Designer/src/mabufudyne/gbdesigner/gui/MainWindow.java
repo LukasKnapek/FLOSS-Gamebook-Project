@@ -112,7 +112,13 @@ public class MainWindow {
 		mainToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
-		tItemNew.setToolTipText("Create a new StoryPiece");
+		tItemNew.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EventHandler.createNewAdventure();
+			}
+		});
+		tItemNew.setToolTipText("Create a new Adventure");
 		tItemNew.setWidth(35);
 		tItemNew.setText("New");
 		

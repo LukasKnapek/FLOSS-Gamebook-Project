@@ -144,5 +144,11 @@ public class StoryPieceManager implements Serializable {
 		}
 	}
 
+	public void revertToDefault() {
+		allStoryPieces.clear();
+		storyPieceOrders.clear();
+		maxOrder = 0;
+	}
+
 
 }

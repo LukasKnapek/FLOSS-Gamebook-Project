@@ -182,7 +182,6 @@ public class EventHandler {
 	
 	public static void performInitialSetup() {
 		EventHandler.createNewStoryPieceAndActivate();
-		EventHandler.handleActionAftermath();
 	}
 
 	public static void randomizeStoryPieceOrder() {
@@ -200,6 +199,17 @@ public class EventHandler {
 		activeSP.getChoicesTexts().replace(choice, text);
 		MainWindow.getInstance().displayStoryPieceContents(activeSP, choiceIndex);
 		handleActionAftermath();
+	}
+
+
+	public static void createNewAdventure() {
+		MementoManager.getInstance().revertToDefault();
+		StoryPieceManager.getInstance().revertToDefault();
+		lastFileLocation = lastFileName = null;
+		
+		createNewStoryPieceAndActivate();
+		MainWindow.getInstance().reloadUI();
+		MainWindow.getInstance().buttonCheck();
 	}
 
 }
