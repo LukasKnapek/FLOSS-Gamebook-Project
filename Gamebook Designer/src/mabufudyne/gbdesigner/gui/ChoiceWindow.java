@@ -19,12 +19,16 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 
 public class ChoiceWindow {
 
 	private static ChoiceWindow instance = new ChoiceWindow();
 	protected Shell shell;
 	private Table tableChoiceSelections;
+	private TableColumn tblclmnChoiceNumber;
+	private TableColumn tblclmnChoiceTitle;
 
 	/**
 	 * Open the window.
@@ -52,17 +56,26 @@ public class ChoiceWindow {
 		shell.setLayout(new GridLayout(1, false));
 		
 		tableChoiceSelections = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoiceSelections.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				// WINDOWS: Resize the last column properly
+				tblclmnChoiceTitle.setWidth(tableChoiceSelections.getSize().x - tblclmnChoiceNumber.getWidth() - 5);
+			}
+		});
 		tableChoiceSelections.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		tableChoiceSelections.setHeaderVisible(true);
 		tableChoiceSelections.setLinesVisible(true);
 		
-		TableColumn tblclmnChoiceNumber = new TableColumn(tableChoiceSelections, SWT.NONE);
+		tblclmnChoiceNumber = new TableColumn(tableChoiceSelections, SWT.NONE);
 		tblclmnChoiceNumber.setWidth(30);
 		tblclmnChoiceNumber.setText("#");
 		
-		TableColumn tblclmnChoiceTitle = new TableColumn(tableChoiceSelections, SWT.NONE);
+		tblclmnChoiceTitle = new TableColumn(tableChoiceSelections, SWT.NONE);
 		tblclmnChoiceTitle.setWidth(100);
 		tblclmnChoiceTitle.setText("StoryPiece Title");
+
+
 		
 		Composite cMain = new Composite(shell, SWT.NONE);
 		cMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -77,6 +90,7 @@ public class ChoiceWindow {
 				if (choice instanceof StoryPiece) {
 					chosenSP = (StoryPiece) choice;
 					EventHandler.addChoice(chosenSP);
+					selectChoice();
 				}
 				else {
 					chosenSP = EventHandler.createNewStoryPiece();
@@ -98,7 +112,7 @@ public class ChoiceWindow {
 		});
 		btnCancelSelection.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		btnCancelSelection.setBounds(0, 0, 79, 28);
-		btnCancelSelection.setText("Cancel");
+		btnCancelSelection.setText("Done");
 		
 		displayPossibleChoices();
 
@@ -108,6 +122,11 @@ public class ChoiceWindow {
 		for (TableItem item : tableChoiceSelections.getItems()) {
 			if (item.getData() == sp) tableChoiceSelections.remove(tableChoiceSelections.indexOf(item));
 		}
+	}
+	
+	private void selectChoice() {
+		tableChoiceSelections.forceFocus();
+		if (tableChoiceSelections.getSelectionCount() == 0) tableChoiceSelections.select(0);
 	}
 	
 	public void displayPossibleChoices() {
@@ -122,7 +141,6 @@ public class ChoiceWindow {
 				choiceItem.setText(0, "" + sp.getOrder());
 				choiceItem.setText(1, sp.getTitle());
 			}
-			
 		}
 		
 		// Possibility to create a new StoryPiece and add it as a choice
@@ -130,6 +148,8 @@ public class ChoiceWindow {
 		item.setData(null);
 		item.setText(0, "");
 		item.setText(1, "--- New StoryPiece ---");
+		
+		selectChoice();
 	}
 	
 	public static ChoiceWindow getInstance() {	

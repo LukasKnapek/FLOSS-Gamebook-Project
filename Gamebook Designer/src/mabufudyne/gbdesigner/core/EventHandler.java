@@ -1,5 +1,6 @@
 package mabufudyne.gbdesigner.core;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -9,7 +10,6 @@ import mabufudyne.gbdesigner.gui.ChoiceWindow;
 import mabufudyne.gbdesigner.gui.MainWindow;
 
 public class EventHandler {
-	
 	
 	public static String lastFileLocation;
 	public static String lastFileName;
@@ -88,8 +88,8 @@ public class EventHandler {
 				out.close();
 				fOut.close();
 				
-				lastFileLocation = savePath.substring(0, savePath.lastIndexOf("/"));
-				lastFileName = savePath.substring(savePath.lastIndexOf("/"));
+				lastFileLocation = savePath.substring(0, savePath.lastIndexOf(File.separator));
+				lastFileName = savePath.substring(savePath.lastIndexOf(File.separator));
 				
 				System.out.println("Saved to: " + lastFileLocation + lastFileName);
 			} catch (Exception e) {
@@ -114,9 +114,9 @@ public class EventHandler {
 					StoryPieceManager.replaceManager(loadedManager);
 					MainWindow.getInstance().reloadUI();
 				}
-				
-				lastFileLocation = loadPath.substring(0, loadPath.lastIndexOf("/"));
-				lastFileName = loadPath.substring(loadPath.lastIndexOf("/"));
+								
+				lastFileLocation = loadPath.substring(0, loadPath.lastIndexOf(File.separator));
+				lastFileName = loadPath.substring(loadPath.lastIndexOf(File.separator));
 
 				System.out.println("Loaded from: " + lastFileLocation + lastFileName);
 
@@ -187,6 +187,7 @@ public class EventHandler {
 	public static void randomizeStoryPieceOrder() {
 		StoryPieceManager.getInstance().randomizeOrder();
 		MainWindow.getInstance().reloadUI();
+		
 	}
 	
 	public static void sortStoryPieces() {

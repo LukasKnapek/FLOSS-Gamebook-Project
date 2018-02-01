@@ -58,6 +58,9 @@ public class MainWindow {
 	private Table tableChoices;
 	private Button btnSaveChoiceText;
 	private ToolItem tItemQuickSave;
+	private TableColumn tColOrder;
+	private TableColumn tColTitle;
+	private TableColumn tColChoiceText; 
 
 	/**
 	 * Launch the application.
@@ -259,6 +262,16 @@ public class MainWindow {
 		lblNewLabel.setText("Choices");
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoices.setLinesVisible(true);
+		tableChoices.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				// WINDOWS: Resize columns automatically, -5 or less needed to not exceed table size
+				int titleColSize = tableChoices.getSize().x - tColOrder.getWidth() - tColTitle.getWidth() - 5;
+				tColChoiceText.setWidth(titleColSize);
+				
+			}
+		});
 		tableChoices.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -267,24 +280,26 @@ public class MainWindow {
 				buttonCheck();
 			}
 		});
-		tableChoices.setLinesVisible(true);
 		tableChoices.setHeaderVisible(true);
 		tableChoices.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
-		TableColumn tableColumn = new TableColumn(tableChoices, SWT.CENTER);
-		tableColumn.setWidth(30);
-		tableColumn.setText("#");
+		tColOrder = new TableColumn(tableChoices, SWT.CENTER);
+		tColOrder.setMoveable(true);
+		tColOrder.setWidth(30);
+		tColOrder.setText("#");
 		
-		TableColumn tableColumn_1 = new TableColumn(tableChoices, SWT.NONE);
-		tableColumn_1.setWidth(100);
-		tableColumn_1.setText("StoryPiece");
+		tColTitle = new TableColumn(tableChoices, SWT.NONE);
+		tColTitle.setMoveable(true);
+		tColTitle.setWidth(100);
+		tColTitle.setText("StoryPiece");
 		
-		TableColumn tableColumn_2 = new TableColumn(tableChoices, SWT.NONE);
-		tableColumn_2.setWidth(200);
-		tableColumn_2.setText("Choice Text");
+		tColChoiceText = new TableColumn(tableChoices, SWT.NONE);
+		tColChoiceText.setMoveable(true);
+		tColChoiceText.setWidth(100);
+		tColChoiceText.setText("Choice Text");
 		
-		ToolBar choiceToolBar = new ToolBar(cChoices, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
-		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		ToolBar choiceToolBar = new ToolBar(cChoices, SWT.FLAT | SWT.VERTICAL);
+		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddChoice = new ToolItem(choiceToolBar, SWT.NONE);
 		tItemAddChoice.setToolTipText("Add a new choice");
@@ -292,7 +307,6 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				EventHandler.displayChoiceSelectionWindow();
-				
 			}
 		});
 		tItemAddChoice.setText("+");
@@ -396,8 +410,8 @@ public class MainWindow {
 		gColFixed.setText("Fixed");
 		gColFixed.setWidth(50);
 		
-		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
-		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.VERTICAL);
+		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
@@ -514,6 +528,7 @@ public class MainWindow {
 			textChoiceText.setEnabled(false);
 		}
 		
+		//System.out.print(EventHandler.lastFileLocation);
 		tItemQuickSave.setEnabled(EventHandler.lastFileLocation != null);
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
 		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
