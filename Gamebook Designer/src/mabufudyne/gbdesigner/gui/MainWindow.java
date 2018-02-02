@@ -91,6 +91,10 @@ public class MainWindow {
 		
 		shlGamebookDesigner.open();
 		shlGamebookDesigner.layout();
+		
+		// WINDOWS: By default, mainToolBar has focus on launch, make it lose the focus
+		shlGamebookDesigner.forceFocus();
+		
 		while (!shlGamebookDesigner.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -104,7 +108,7 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shlGamebookDesigner = new Shell();
-		shlGamebookDesigner.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/img_checkbox_checked.png"));
+		shlGamebookDesigner.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/appLogo_64x64.png"));
 		shlGamebookDesigner.setMinimumSize(new Point(700, 550));
 		shlGamebookDesigner.setSize(450, 300);
 		shlGamebookDesigner.setText("Gamebook Designer");
@@ -221,7 +225,7 @@ public class MainWindow {
 			}
 		});
 		spinOrder.setTextLimit(3);
-		spinOrder.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		spinOrder.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 		spinOrder.setMaximum(500);
 		
 		textTitle = new Text(cTitle, SWT.BORDER);
@@ -460,7 +464,6 @@ public class MainWindow {
 		sashMain.setWeights(new int[] {2, 1});
 
 	}
-	
 
 	public void displayStoryPieceItem(StoryPiece displayedSP) {
 		GridItem item = new GridItem(gridStoryPieces, SWT.CENTER);
@@ -526,6 +529,7 @@ public class MainWindow {
 			tItemRemoveChoice.setEnabled(false);
 			btnSaveChoiceText.setEnabled(false);
 			textChoiceText.setEnabled(false);
+			textChoiceText.setText("");
 		}
 		
 		//System.out.print(EventHandler.lastFileLocation);

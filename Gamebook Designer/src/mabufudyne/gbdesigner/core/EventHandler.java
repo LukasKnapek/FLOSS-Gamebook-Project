@@ -51,6 +51,7 @@ public class EventHandler {
 		StoryPieceManager.getInstance().setActiveStoryPiece(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(sp, 0);
+		MainWindow.getInstance().buttonCheck();
 	}
 	
 	// Display choice selection window, save state once user finished working with it
@@ -114,7 +115,10 @@ public class EventHandler {
 					StoryPieceManager.replaceManager(loadedManager);
 					MainWindow.getInstance().reloadUI();
 				}
-								
+				
+				MementoManager.getInstance().revertToDefault();
+				handleActionAftermath();
+				
 				lastFileLocation = loadPath.substring(0, loadPath.lastIndexOf(File.separator));
 				lastFileName = loadPath.substring(loadPath.lastIndexOf(File.separator));
 
