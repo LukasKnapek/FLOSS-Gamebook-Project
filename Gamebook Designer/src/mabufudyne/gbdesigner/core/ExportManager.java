@@ -3,19 +3,34 @@ package mabufudyne.gbdesigner.core;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
+/**
+ * This class is used to export an Adventure to an output file (HTML)
+ */
 public class ExportManager {
 	
 	private StringBuilder HTMLContents;
 	private static ExportManager instance = new ExportManager();
 	
+	/* Constructors */
+	
 	private ExportManager () {
 		this.HTMLContents = new StringBuilder();
 	}
 
+	/* Getters and setters */
+	
 	public static ExportManager getInstance() {
 		return instance;
 	}
 	
+	/**
+	 * The main export method which exports an Adventure to a file by doing the following steps</br>
+	 * 1) Create the first half of basic HTML document structure
+	 * 2) List the Adventure title
+	 * 3) List the StoryPieces themselvs and their choices
+	 * 4) Create the second half of the basic HTML structure
+	 * @param exportPath - The location of the exported HTML file
+	 */
 	public void exportAdventure(String exportPath) {
 		createBasicStructure();
 		addAdventureTitle();

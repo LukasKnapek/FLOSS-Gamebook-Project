@@ -23,9 +23,11 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import mabufudyne.gbdesigner.core.EventHandler;
+import mabufudyne.gbdesigner.core.GeneralEventHandler;
+import mabufudyne.gbdesigner.core.FileEventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
 import mabufudyne.gbdesigner.core.StoryPiece;
+import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.nebula.widgets.grid.GridColumn;
@@ -87,7 +89,7 @@ public class MainWindow {
 		createContents();
 		
 		// Create an initial StoryPiece
-		EventHandler.performInitialSetup();
+		GeneralEventHandler.performInitialSetup();
 		
 		shlGamebookDesigner.open();
 		shlGamebookDesigner.layout();
@@ -122,7 +124,7 @@ public class MainWindow {
 		tItemNew.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.createNewAdventure();
+				GeneralEventHandler.createNewAdventure();
 			}
 		});
 		tItemNew.setToolTipText("Create a new Adventure");
@@ -135,7 +137,7 @@ public class MainWindow {
 		tItemQuickSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.saveAdventure(true);
+				FileEventHandler.saveAdventure(true);
 			}
 		});
 		tItemQuickSave.setText("Save");
@@ -146,7 +148,7 @@ public class MainWindow {
 		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.saveAdventure(false);
+				FileEventHandler.saveAdventure(false);
 			}
 		});
 		tltmSaveAs.setText("Save As");
@@ -157,7 +159,7 @@ public class MainWindow {
 		tltmLoad.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.loadAdventure();
+				FileEventHandler.loadAdventure();
 			}
 		});
 		tltmLoad.setText("Load");
@@ -168,7 +170,7 @@ public class MainWindow {
 		tItemUndo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.undo();
+				GeneralEventHandler.undo();
 				buttonCheck();
 			}
 		});
@@ -181,7 +183,7 @@ public class MainWindow {
 		tItemRedo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.redo();
+				GeneralEventHandler.redo();
 				buttonCheck();
 			}
 		});
@@ -193,7 +195,7 @@ public class MainWindow {
 		tItemExport.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.exportAdventure();
+				GeneralEventHandler.exportAdventure();
 			}
 		});
 		tItemExport.setText("Export");
@@ -221,7 +223,7 @@ public class MainWindow {
 				int newOrder = Integer.valueOf(spinOrder.getText());
 				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 				
-				EventHandler.changeStoryPieceOrder(activeSP, newOrder);
+				StoryPieceEventHandler.changeStoryPieceOrder(activeSP, newOrder);
 			}
 		});
 		spinOrder.setTextLimit(3);
@@ -234,7 +236,7 @@ public class MainWindow {
 			public void focusLost(FocusEvent e) {
 				String newTitle = textTitle.getText();
 				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
-				EventHandler.changeStoryPieceTitle(activeSP, newTitle);
+				StoryPieceEventHandler.changeStoryPieceTitle(activeSP, newTitle);
 			}
 		});
 		textTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -253,7 +255,7 @@ public class MainWindow {
 				String newStory = textStory.getText();
 				StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 				
-				EventHandler.changeStoryPieceStory(activeSP, newStory);
+				StoryPieceEventHandler.changeStoryPieceStory(activeSP, newStory);
 			}
 		});
 		textStory.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -310,7 +312,7 @@ public class MainWindow {
 		tItemAddChoice.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.displayChoiceSelectionWindow();
+				GeneralEventHandler.displayChoiceSelectionWindow();
 			}
 		});
 		tItemAddChoice.setText("+");
@@ -322,7 +324,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				StoryPiece choice = (StoryPiece) tableChoices.getSelection()[0].getData();
 				int choiceIndex = tableChoices.getSelectionIndex();
-				EventHandler.removeChoice(choice, choiceIndex);
+				StoryPieceEventHandler.removeChoice(choice, choiceIndex);
 			}
 		});
 		tItemRemoveChoice.setText("-");
@@ -340,7 +342,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				StoryPiece selectedChoice = (StoryPiece) tableChoices.getSelection()[0].getData();
 				String newChoiceText = textChoiceText.getText();
-				EventHandler.changeChoiceText(selectedChoice, newChoiceText, tableChoices.getSelectionIndex());
+				StoryPieceEventHandler.changeChoiceText(selectedChoice, newChoiceText, tableChoices.getSelectionIndex());
 				tableChoices.select(tableChoices.getSelectionIndex());
 			}
 		});
@@ -367,11 +369,11 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if (e.detail == SWT.CHECK) {
 					GridItem checkedItem = (GridItem) e.item;
-					EventHandler.changeFixedProperty((StoryPiece) checkedItem.getData());
+					StoryPieceEventHandler.changeFixedProperty((StoryPiece) checkedItem.getData());
 				}
 				else {
 					StoryPiece sp = (StoryPiece) e.item.getData();
-					EventHandler.changeActiveStoryPiece(sp);
+					StoryPieceEventHandler.changeActiveStoryPiece(sp);
 					displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 				}
 			}
@@ -423,7 +425,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				// Lose data fields focus to trigger save of SP details
 				shlGamebookDesigner.forceFocus();
-				EventHandler.createNewStoryPieceAndActivate();
+				StoryPieceEventHandler.createNewStoryPieceAndActivate();
 			}
 		});
 		tItemAddStoryPiece.setToolTipText("Create a new StoryPiece");
@@ -436,7 +438,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				GridItem item = gridStoryPieces.getSelection()[0];
 				if (item.getData() instanceof StoryPiece) {
-					EventHandler.deleteStoryPiece((StoryPiece) item.getData());
+					StoryPieceEventHandler.deleteStoryPiece((StoryPiece) item.getData());
 				}
 			}
 		});
@@ -447,7 +449,7 @@ public class MainWindow {
 		tItemRandomize.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.randomizeStoryPieceOrder();
+				StoryPieceEventHandler.randomizeStoryPieceOrder();
 			}
 		});
 		tItemRandomize.setText("R");
@@ -457,7 +459,7 @@ public class MainWindow {
 		tItemSort.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				EventHandler.sortStoryPieces();
+				StoryPieceEventHandler.sortStoryPieces();
 			}
 		});
 		tItemSort.setText("S");
@@ -465,6 +467,10 @@ public class MainWindow {
 
 	}
 
+	/**
+	 * Creates and displays a GridItem representing a single existing StoryPiece.
+	 * @param displayedSP - The StoryPiece that should be represented by the GridItem
+	 */
 	public void displayStoryPieceItem(StoryPiece displayedSP) {
 		GridItem item = new GridItem(gridStoryPieces, SWT.CENTER);
 		
@@ -476,6 +482,11 @@ public class MainWindow {
 		item.setBackground(gridStoryPieces.getBackground());
 	}
 	
+	/**
+	 * Displays the fields data of the given StoryPiece
+	 * @param displayedSP - The StoryPiece whose data should be displayed
+	 * @param activeChoiceIndex - The index of the selected TableItem in the table of Choices of the StoryPiece
+	 */
 	public void displayStoryPieceContents(StoryPiece displayedSP, int activeChoiceIndex) {
 		spinOrder.setSelection(displayedSP.getOrder());
 		textTitle.setText(displayedSP.getTitle());
@@ -485,10 +496,16 @@ public class MainWindow {
 		displayStoryPieceChoices(displayedSP, activeChoiceIndex);
 	}
 	
+	/**
+	 * Displays all choices (StoryPieces) which can be reached from the given StoryPiece
+	 * @param displayedSP - The StoryPiece whose choices should be displayd
+	 * @param activeChoiceIndex - The selected choice TableItem index
+	 */
 	public void displayStoryPieceChoices(StoryPiece displayedSP, int activeChoiceIndex) {
 		for (StoryPiece choice : displayedSP.getChoicesTexts().keySet()) {
 			TableItem choiceItem = new TableItem(tableChoices, SWT.CENTER);
 			String choiceText = displayedSP.getChoicesTexts().get(choice);
+			// Column 0 - order, column 1 - StoryPiece title, column 2 - Choice description text
 			choiceItem.setData(choice);
 			choiceItem.setText(0, "" + choice.getOrder());
 			choiceItem.setText(1, choice.getTitle());
@@ -499,8 +516,6 @@ public class MainWindow {
 			tableChoices.select(activeChoiceIndex);
 			tableChoices.notifyListeners(SWT.Selection, new Event());
 		}
-		//gridStoryPieces.forceFocus();
-		//tableChoices.forceFocus();
 	}
 
 	public void removeStoryPieceItem(StoryPiece sp) {
@@ -511,6 +526,9 @@ public class MainWindow {
 		}
 	}
 	
+	/**
+	 * Performs a check to see which buttons/widgets should be enabled/disabled based on the current model/application state.
+	 */
 	public void buttonCheck() {
 
 		if (StoryPieceManager.getInstance().canRemoveStoryPieces() && gridStoryPieces.getSelection().length != 0) {
@@ -532,14 +550,15 @@ public class MainWindow {
 			textChoiceText.setText("");
 		}
 		
-		//System.out.print(EventHandler.lastFileLocation);
-		tItemQuickSave.setEnabled(EventHandler.lastFileLocation != null);
+		tItemQuickSave.setEnabled(FileEventHandler.lastFileLocation != null);
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
 		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
 		
 	}
 
-	/** Highlights the TableItem of the currently active StoryPiece */
+	/** 
+	 * Highlights the TableItem of the currently active StoryPiece 
+	 */
 	public void highlightActiveStoryPiece() {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 		for (GridItem item : gridStoryPieces.getItems()) {
@@ -559,10 +578,6 @@ public class MainWindow {
 		textStory.setText("");
 		gridStoryPieces.clearItems();
 		tableChoices.removeAll();
-	}
-	
-	public GridItem[] getStoryPieceTableItems() {
-		return gridStoryPieces.getItems();
 	}
 
 	public String invokeSaveDialog(String path) {
@@ -598,6 +613,9 @@ public class MainWindow {
 		return exportPath;
 	}
 
+	/**
+	 * Clears the UI and then reloads all the Model data
+	 */
 	public void reloadUI() {
 		clearUI();
 		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {

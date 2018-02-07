@@ -3,10 +3,10 @@ package mabufudyne.gbdesigner.core;
 import java.io.Serializable;
 import java.util.HashMap;
 
+/** 
+ * Represents a single Gamebook part/section which contains part of the overall story and choices which allow the player to get to another section.
+ */
 public class StoryPiece implements Serializable, Comparable<Object> {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4835564426765463L;
 	private int order;
 	private boolean fixedOrder;
@@ -22,25 +22,26 @@ public class StoryPiece implements Serializable, Comparable<Object> {
 		this.order = StoryPieceManager.getInstance().getNextAvailableOrder();
 		this.fixedOrder = false;
 		this.choicesTexts = new HashMap<StoryPiece, String>();
-		
 	}
 
 	/* Getters and Setters */
 	
-	
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public HashMap<StoryPiece, String> getChoicesTexts() {
-		return choicesTexts;
-	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
 	public String getStory() {
 		return story;
 	}
@@ -49,20 +50,16 @@ public class StoryPiece implements Serializable, Comparable<Object> {
 		this.story = story;
 	}
 	
+	public HashMap<StoryPiece, String> getChoicesTexts() {
+		return choicesTexts;
+	}
+
 	public void addChoice(StoryPiece sp) {
 		this.choicesTexts.put(sp, "Go to");
 	}
 
 	public void removeChoice(StoryPiece sp) {
 		this.choicesTexts.remove((Object) sp); 
-	}
-
-	public int getOrder() {
-		return order;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
 	}
 
 	public boolean isFixed() {
@@ -73,6 +70,11 @@ public class StoryPiece implements Serializable, Comparable<Object> {
 		this.fixedOrder = fixedOrder;
 	}
 
+	/* Overriden methods */
+
+	/* 
+	 * Compares two StoryPieces based on their order. The one with the higher order is considered "greater" than the other one.
+	 */
 	@Override
 	public int compareTo(Object other) {
 		StoryPiece otherSP = (StoryPiece) other;

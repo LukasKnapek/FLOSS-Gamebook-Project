@@ -6,8 +6,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import mabufudyne.gbdesigner.core.EventHandler;
 import mabufudyne.gbdesigner.core.StoryPiece;
+import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
 import java.util.ArrayList;
@@ -21,7 +21,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-
+/**
+ * This window displays all choices (StoryPieces) that can be linked to the current StoryPiece.
+ */
 public class ChoiceWindow {
 
 	private static ChoiceWindow instance = new ChoiceWindow();
@@ -30,6 +32,11 @@ public class ChoiceWindow {
 	private TableColumn tblclmnChoiceNumber;
 	private TableColumn tblclmnChoiceTitle;
 
+	/* Getters */
+	public static ChoiceWindow getInstance() {	
+		return instance;
+	}
+	
 	/**
 	 * Open the window.
 	 * @wbp.parser.entryPoint
@@ -89,12 +96,12 @@ public class ChoiceWindow {
 				Object choice = tableChoiceSelections.getSelection()[0].getData();
 				if (choice instanceof StoryPiece) {
 					chosenSP = (StoryPiece) choice;
-					EventHandler.addChoice(chosenSP);
+					StoryPieceEventHandler.addChoice(chosenSP);
 					selectChoice();
 				}
 				else {
-					chosenSP = EventHandler.createNewStoryPiece();
-					EventHandler.addChoice(chosenSP);
+					chosenSP = StoryPieceEventHandler.createNewStoryPiece();
+					StoryPieceEventHandler.addChoice(chosenSP);
 					shell.close();
 				}
 			}
@@ -118,22 +125,35 @@ public class ChoiceWindow {
 
 	}
 	
+	/**
+	 * Removes the given choice (StoryPiece) from view after it has been added before.
+	 * @param sp - The choice that should be removed
+	 */
 	public void removeChoiceFromView(StoryPiece sp) {
 		for (TableItem item : tableChoiceSelections.getItems()) {
 			if (item.getData() == sp) tableChoiceSelections.remove(tableChoiceSelections.indexOf(item));
 		}
 	}
 	
+	/**
+	 * WINDOWS: Forces the focus for the table of choices.
+	 */
 	private void selectChoice() {
 		tableChoiceSelections.forceFocus();
 		if (tableChoiceSelections.getSelectionCount() == 0) tableChoiceSelections.select(0);
 	}
 	
+	/**
+	 * Displays all choices that can be linked to the current StoryPiece. These are all StoryPieces that:
+	 * 1) Are not the current StoryPiece
+	 * 2) Are not already one of the choices
+	 * The user can also select --- New StoryPiece --- option to create a new StoryPiece 
+	 * and link it as a choice to the current StoryPiece immediately
+	 */
 	public void displayPossibleChoices() {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 		ArrayList<StoryPiece> allStoryPieces = StoryPieceManager.getInstance().getAllStoryPieces();
 		
-		// Possible choices include SPs that are not already choices or equal to the active SP
 		for (StoryPiece sp : allStoryPieces) {
 			if (!activeSP.getChoicesTexts().containsKey(sp) && sp != activeSP) {
 				TableItem choiceItem = new TableItem(tableChoiceSelections, SWT.CENTER);
@@ -143,16 +163,12 @@ public class ChoiceWindow {
 			}
 		}
 		
-		// Possibility to create a new StoryPiece and add it as a choice
+		// Option to create a new StoryPiece and add it as a choice
 		TableItem item = new TableItem(tableChoiceSelections, SWT.CENTER);
 		item.setData(null);
 		item.setText(0, "");
 		item.setText(1, "--- New StoryPiece ---");
 		
 		selectChoice();
-	}
-	
-	public static ChoiceWindow getInstance() {	
-		return instance;
 	}
 }

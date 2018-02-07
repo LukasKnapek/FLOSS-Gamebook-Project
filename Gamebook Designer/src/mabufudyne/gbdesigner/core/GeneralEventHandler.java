@@ -1,0 +1,69 @@
+package mabufudyne.gbdesigner.core;
+
+import mabufudyne.gbdesigner.gui.ChoiceWindow;
+import mabufudyne.gbdesigner.gui.MainWindow;
+
+/**
+ * Handles general application events
+ */
+public class GeneralEventHandler {
+	
+	/**
+	 * Sets up the environemtn on application launch:</br>
+	 * 1) Creates a new StoryPiece (as there must be at least one at all times)
+	 */
+	public static void performInitialSetup() {
+		StoryPieceEventHandler.createNewStoryPieceAndActivate();
+	}
+
+	/**
+	 * Displays choice selection window where the user can add choices to the currently active StoryPiece.
+	 * Afterwards, updates the View to reflect the changes for the active StoryPiece and saves the state
+	 */
+	public static void displayChoiceSelectionWindow() {
+		ChoiceWindow.getInstance().open();
+		// Update active SP in view (we might have added choices)
+		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
+		StoryPieceEventHandler.handleActionAftermath();
+	}
+	
+	/**
+	 * Exports the current Adventure to a file.
+	 */
+	public static void exportAdventure() {
+		String exportPath = MainWindow.getInstance().invokeExportDialog();
+		ExportManager.getInstance().exportAdventure(exportPath);
+	}
+	
+	/**
+	 * Performs the action that has been undone by switching to the next state in History
+	 */
+	public static void redo() {
+		Memento lastState = MementoManager.getInstance().getNextState();
+		StoryPieceManager.replaceManager(lastState.getManagerMemento());
+		MainWindow.getInstance().reloadUI();
+	}
+	
+	/**
+	 * Reverts the last action by switching to the previous state in History
+	 */
+	public static void undo() {
+		Memento lastState = MementoManager.getInstance().getPreviousState();
+		StoryPieceManager.replaceManager(lastState.getManagerMemento());
+		MainWindow.getInstance().reloadUI();
+	}
+
+	/**
+	 * Creates a new Adventure by reverting the Model and the View to their original states
+	 */
+	public static void createNewAdventure() {
+		MementoManager.getInstance().revertToDefault();
+		StoryPieceManager.getInstance().revertToDefault();
+		FileEventHandler.resetPaths();
+		
+		StoryPieceEventHandler.createNewStoryPieceAndActivate();
+		MainWindow.getInstance().reloadUI();
+		MainWindow.getInstance().buttonCheck();
+	}
+
+}
