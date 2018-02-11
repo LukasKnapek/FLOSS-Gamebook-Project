@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.eclipse.swt.SWT;
-
 import mabufudyne.gbdesigner.gui.SaveDirtyConfirmDialog;
 import mabufudyne.gbdesigner.gui.MainWindow;
 /**

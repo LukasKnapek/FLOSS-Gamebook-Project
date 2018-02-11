@@ -383,7 +383,7 @@ public class MainWindow {
 				}
 				else {
 					StoryPiece sp = (StoryPiece) e.item.getData();
-					StoryPieceEventHandler.changeActiveStoryPiece(sp);
+					StoryPieceEventHandler.changeActiveStoryPiece(sp, true);
 					displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 				}
 			}

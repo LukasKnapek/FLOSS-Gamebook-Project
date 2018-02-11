@@ -24,7 +24,7 @@ public class MementoManager {
 	
 	public Memento getNextState() {
 		currentStatePosition++;
-		return history.get(currentStatePosition); 
+		return history.get(currentStatePosition);
 	}
 	
 	public static MementoManager getInstance() {
@@ -38,16 +38,18 @@ public class MementoManager {
 	public void saveState() {
 		Memento newState = new Memento();
 		
-		// If we are not at the end of the history, cut off the rest of it since new action
-		// performed while browsing history will disable redo
-		if (currentStatePosition != history.size()-1) {
-			history = new ArrayList<Memento> (history.subList(0, currentStatePosition));
-			history.add(newState);
+		// If the history is empty, do nothing here
+		if (history.size() == 0) { }
+		// If we are not at the end of history (we have performed undo), cut off the redo part of the history
+		else if (currentStatePosition != history.size()-1) {
+			history = new ArrayList<Memento> (history.subList(0, currentStatePosition+1));
 		}
-		else if (history.size() != 0) {
+		// If the history is not empty, increment position before saving the new state
+		if (history.size() != 0) {
 			currentStatePosition++;
-			history.add(newState);
 		}
+		history.add(newState);
+
 	}
 
 	/**

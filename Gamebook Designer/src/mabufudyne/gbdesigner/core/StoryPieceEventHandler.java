@@ -14,7 +14,7 @@ public class StoryPieceEventHandler {
 	 */
 	public static StoryPiece createNewStoryPieceAndActivate() {
 		StoryPiece sp = StoryPieceManager.getInstance().addNewStoryPiece();
-		changeActiveStoryPiece(sp);
+		changeActiveStoryPiece(sp, false);
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		handleActionAftermath(true, true);
@@ -54,13 +54,13 @@ public class StoryPieceEventHandler {
 	 * Changes the active StoryPiece to the one that has been selected by user.
 	 * @param sp - The StoryPiece instance whose TableItem has been selected.
 	 */
-	public static void changeActiveStoryPiece(StoryPiece sp) {
+	public static void changeActiveStoryPiece(StoryPiece sp, boolean saveState) {
 		// Change active SP, highlight it in the grid and display its contents
 		StoryPieceManager.getInstance().setActiveStoryPiece(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(sp, 0);
 		MainWindow.getInstance().buttonCheck();
-		handleActionAftermath(true, false);
+		handleActionAftermath(saveState, false);
 	}
 	
 	/**

@@ -43,7 +43,7 @@ public class GeneralEventHandler {
 	 */
 	public static void redo() {
 		Memento lastState = MementoManager.getInstance().getNextState();
-		StoryPieceManager.replaceManager(lastState.getManagerMemento());
+		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
 		MainWindow.getInstance().reloadUI();
 	}
 	
@@ -52,7 +52,7 @@ public class GeneralEventHandler {
 	 */
 	public static void undo() {
 		Memento lastState = MementoManager.getInstance().getPreviousState();
-		StoryPieceManager.replaceManager(lastState.getManagerMemento());
+		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
 		MainWindow.getInstance().reloadUI();
 	}
 
