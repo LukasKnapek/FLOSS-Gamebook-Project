@@ -21,6 +21,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.SWTResourceManager;
 /**
  * This window displays all choices (StoryPieces) that can be linked to the current StoryPiece.
  */
@@ -31,6 +33,7 @@ public class ChoiceWindow {
 	private Table tableChoiceSelections;
 	private TableColumn tblclmnChoiceNumber;
 	private TableColumn tblclmnChoiceTitle;
+	private Label lblNewLabel;
 
 	/* Getters */
 	public static ChoiceWindow getInstance() {	
@@ -58,9 +61,12 @@ public class ChoiceWindow {
 	 */
 	protected void createContents() {
 		shell = new Shell(SWT.APPLICATION_MODAL);
+		shell.setImage(SWTResourceManager.getImage(ChoiceWindow.class, "/com/sun/java/swing/plaf/windows/icons/Error.gif"));
 		shell.setSize(450, 300);
 		shell.setText("SWT Application");
-		shell.setLayout(new GridLayout(1, false));
+		shell.setLayout(new GridLayout(2, false));
+		
+		lblNewLabel = new Label(shell, SWT.NONE);
 		
 		tableChoiceSelections = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 		tableChoiceSelections.addControlListener(new ControlAdapter() {
@@ -81,45 +87,47 @@ public class ChoiceWindow {
 		tblclmnChoiceTitle = new TableColumn(tableChoiceSelections, SWT.NONE);
 		tblclmnChoiceTitle.setWidth(100);
 		tblclmnChoiceTitle.setText("StoryPiece Title");
-
-
 		
-		Composite cMain = new Composite(shell, SWT.NONE);
-		cMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		cMain.setLayout(new GridLayout(2, false));
 		
-		Button btnAddSelectedChoice = new Button(cMain, SWT.NONE);
-		btnAddSelectedChoice.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				StoryPiece chosenSP = null;
-				Object choice = tableChoiceSelections.getSelection()[0].getData();
-				if (choice instanceof StoryPiece) {
-					chosenSP = (StoryPiece) choice;
-					StoryPieceEventHandler.addChoice(chosenSP);
-					selectChoice();
-				}
-				else {
-					chosenSP = StoryPieceEventHandler.createNewStoryPiece();
-					StoryPieceEventHandler.addChoice(chosenSP);
-					shell.close();
-				}
-			}
-		});
-		btnAddSelectedChoice.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		btnAddSelectedChoice.setBounds(0, 0, 79, 28);
-		btnAddSelectedChoice.setText("Add Choice");
-		
-		Button btnCancelSelection = new Button(cMain, SWT.NONE);
-		btnCancelSelection.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				shell.close();
-			} 
-		});
-		btnCancelSelection.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		btnCancelSelection.setBounds(0, 0, 79, 28);
-		btnCancelSelection.setText("Done");
+				
+				Composite cMain = new Composite(shell, SWT.NONE);
+				cMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+				cMain.setLayout(new GridLayout(2, false));
+				
+				Button btnAddSelectedChoice = new Button(cMain, SWT.NONE);
+				btnAddSelectedChoice.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						StoryPiece chosenSP = null;
+						Object choice = tableChoiceSelections.getSelection()[0].getData();
+						if (choice instanceof StoryPiece) {
+							chosenSP = (StoryPiece) choice;
+							StoryPieceEventHandler.addChoice(chosenSP);
+							selectChoice();
+						}
+						else {
+							chosenSP = StoryPieceEventHandler.createNewStoryPiece();
+							StoryPieceEventHandler.addChoice(chosenSP);
+							shell.close();
+						}
+					}
+				});
+				btnAddSelectedChoice.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+				btnAddSelectedChoice.setBounds(0, 0, 79, 28);
+				btnAddSelectedChoice.setText("Add Choice");
+				
+				Button btnCancelSelection = new Button(cMain, SWT.NONE);
+				btnCancelSelection.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						shell.close();
+					} 
+				});
+				btnCancelSelection.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+				btnCancelSelection.setBounds(0, 0, 79, 28);
+				btnCancelSelection.setText("Done");
+				new Label(shell, SWT.NONE);
+				new Label(shell, SWT.NONE);
 		
 		displayPossibleChoices();
 

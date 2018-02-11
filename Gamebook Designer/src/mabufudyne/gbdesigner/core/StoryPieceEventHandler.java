@@ -17,7 +17,7 @@ public class StoryPieceEventHandler {
 		changeActiveStoryPiece(sp);
 		MainWindow.getInstance().displayStoryPieceItem(sp);
 		MainWindow.getInstance().highlightActiveStoryPiece();
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 		return sp;
 	}
 	
@@ -47,7 +47,7 @@ public class StoryPieceEventHandler {
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
 		
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 	}
 
 	/**
@@ -60,15 +60,19 @@ public class StoryPieceEventHandler {
 		MainWindow.getInstance().highlightActiveStoryPiece();
 		MainWindow.getInstance().displayStoryPieceContents(sp, 0);
 		MainWindow.getInstance().buttonCheck();
+		handleActionAftermath(true, false);
 	}
 	
 	/**
 	 * Saves the current state of the application and performs a button check, enabling/disabling buttons as 
 	 * necessary to reflect the new state of the application.
 	 */
-	public static void handleActionAftermath() {
-		MementoManager.getInstance().saveState();
+	public static void handleActionAftermath(boolean saveState, boolean modifiesFile) {
+		if (saveState) MementoManager.getInstance().saveState();
+		if (modifiesFile) FileEventHandler.setDirtyStatus(true);
+		
 		MainWindow.getInstance().buttonCheck();
+
 	}
 	
 	/** 
@@ -77,7 +81,7 @@ public class StoryPieceEventHandler {
 	 */
 	public static void changeFixedProperty(StoryPiece sp) {
 		sp.setFixed(!sp.isFixed());
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 	}
 	
 	/**
@@ -90,7 +94,7 @@ public class StoryPieceEventHandler {
 		if (order > 0 && order <= StoryPieceManager.getInstance().getNextAvailableOrder()-1) {
 			StoryPieceManager.getInstance().resolveOrder(sp, order);
 			StoryPieceManager.getInstance().sortStoryPieces();
-			handleActionAftermath();
+			handleActionAftermath(true, true);
 		}
 		MainWindow.getInstance().reloadUI();
 	}
@@ -103,7 +107,7 @@ public class StoryPieceEventHandler {
 	public static void changeStoryPieceTitle(StoryPiece sp, String title) {
 		sp.setTitle(title);
 		MainWindow.getInstance().reloadUI();
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 	}
 
 	/**
@@ -113,7 +117,7 @@ public class StoryPieceEventHandler {
 	 */
 	public static void changeStoryPieceStory(StoryPiece sp, String story) {
 		sp.setStory(story);
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 	}
 	
 	/**
@@ -137,6 +141,8 @@ public class StoryPieceEventHandler {
 		if (choiceIndex != 0) choiceIndex = choiceIndex - 1;
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), choiceIndex);
 		MainWindow.getInstance().buttonCheck();
+		
+		handleActionAftermath(true, true);
 	}
 	
 	/**
@@ -145,6 +151,8 @@ public class StoryPieceEventHandler {
 	public static void randomizeStoryPieceOrder() {
 		StoryPieceManager.getInstance().randomizeOrder();
 		MainWindow.getInstance().reloadUI();
+		handleActionAftermath(true, true);
+
 		
 	}
 	
@@ -154,6 +162,7 @@ public class StoryPieceEventHandler {
 	public static void sortStoryPieces() {
 		StoryPieceManager.getInstance().sortStoryPieces();
 		MainWindow.getInstance().reloadUI();
+		handleActionAftermath(true, true);
 	}
 	
 	/**
@@ -167,7 +176,7 @@ public class StoryPieceEventHandler {
 		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
 		activeSP.getChoicesTexts().replace(choice, text);
 		MainWindow.getInstance().displayStoryPieceContents(activeSP, choiceIndex);
-		handleActionAftermath();
+		handleActionAftermath(true, true);
 	}
 	
 	

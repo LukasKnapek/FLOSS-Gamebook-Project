@@ -13,7 +13,10 @@ public class GeneralEventHandler {
 	 * 1) Creates a new StoryPiece (as there must be at least one at all times)
 	 */
 	public static void performInitialSetup() {
+		MainWindow.getInstance().changeApplicationTitle("Unnamed Adventure");
 		StoryPieceEventHandler.createNewStoryPieceAndActivate();
+		// New Adventure should not be considered a modified file
+		FileEventHandler.setDirtyStatus(false);
 	}
 
 	/**
@@ -24,7 +27,7 @@ public class GeneralEventHandler {
 		ChoiceWindow.getInstance().open();
 		// Update active SP in view (we might have added choices)
 		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
-		StoryPieceEventHandler.handleActionAftermath();
+		StoryPieceEventHandler.handleActionAftermath(true, true);
 	}
 	
 	/**
@@ -57,11 +60,15 @@ public class GeneralEventHandler {
 	 * Creates a new Adventure by reverting the Model and the View to their original states
 	 */
 	public static void createNewAdventure() {
+		
+		boolean canCreateNew = FileEventHandler.checkForUnsavedFileChanges();
+		if (!canCreateNew) return;
+		
 		MementoManager.getInstance().revertToDefault();
 		StoryPieceManager.getInstance().revertToDefault();
 		FileEventHandler.resetPaths();
 		
-		StoryPieceEventHandler.createNewStoryPieceAndActivate();
+		performInitialSetup();
 		MainWindow.getInstance().reloadUI();
 		MainWindow.getInstance().buttonCheck();
 	}

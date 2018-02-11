@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -37,6 +38,8 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 
 public class MainWindow {
 
@@ -110,6 +113,13 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shlGamebookDesigner = new Shell();
+		shlGamebookDesigner.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellClosed(ShellEvent e) {
+				boolean canClose = FileEventHandler.checkForUnsavedFileChanges();
+				if (!canClose) e.doit = false;
+			}
+		});
 		shlGamebookDesigner.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/appLogo_64x64.png"));
 		shlGamebookDesigner.setMinimumSize(new Point(700, 550));
 		shlGamebookDesigner.setSize(450, 300);
@@ -630,6 +640,19 @@ public class MainWindow {
 	public void displayChoiceText(StoryPiece choice) {
 		String choiceText = StoryPieceManager.getInstance().getActiveStoryPiece().getChoicesTexts().get(choice);
 		textChoiceText.setText(choiceText);
+	}
+	
+	public void changeApplicationTitle(String text) {
+		shlGamebookDesigner.setText(text + " - Gamebook Designer");
+	}
+	
+	public void showFileDirtyStatus(boolean isDirty) {
+		String appTitle = shlGamebookDesigner.getText().replace("*", "");
+		shlGamebookDesigner.setText(isDirty ? "*" + appTitle : appTitle);
+	}
+
+	public Shell getShell() {
+		return shlGamebookDesigner;
 	}
 }
 
