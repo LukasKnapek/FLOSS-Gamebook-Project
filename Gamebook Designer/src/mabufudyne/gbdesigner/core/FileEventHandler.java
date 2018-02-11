@@ -15,7 +15,7 @@ public class FileEventHandler {
 	
 	private static String lastFileLocation;
 	private static String lastFileName;
-	private static boolean isFileDirty;
+	private static boolean fileDirty;
 	private static Operation operationState;
 	private static Memento lastFileSavedState;
 	
@@ -25,11 +25,13 @@ public class FileEventHandler {
 	 */
 	public static boolean saveAdventure(boolean quickSave) {
 		String savePath = "";
-		if (quickSave) savePath = getLastFileLocation() + lastFileName;
+		if (quickSave) savePath = getLastFileLocation() + getLastFileName();
 		else savePath = MainWindow.getInstance().invokeSaveDialog(getLastFileLocation());
 
 		if (savePath != null) {
 			try {
+				if (!savePath.endsWith(".adv")) savePath += ".adv";
+				
 				FileOutputStream fOut = new FileOutputStream(savePath);
 				ObjectOutputStream out = new ObjectOutputStream(fOut);
 				out.writeObject(StoryPieceManager.getInstance());
@@ -37,13 +39,13 @@ public class FileEventHandler {
 				fOut.close();
 				
 				setLastFileLocation(savePath.substring(0, savePath.lastIndexOf(File.separator)));
-				lastFileName = savePath.substring(savePath.lastIndexOf(File.separator));
+				setLastFileName(savePath.substring(savePath.lastIndexOf(File.separator)));
 				
-				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + getLastFileLocation());
+				MainWindow.getInstance().changeApplicationTitle(getLastFileName().substring(1) + " - " + getLastFileLocation());
 				MainWindow.getInstance().buttonCheck();
 				setDirtyStatus(false);
 				
-				System.out.println("Saved to: " + getLastFileLocation() + lastFileName);
+				System.out.println("Saved to: " + getLastFileLocation() + getLastFileName());
 				
 				return true;
 
@@ -101,7 +103,7 @@ public class FileEventHandler {
 	}
 	
 	public static boolean checkForUnsavedFileChanges() {
-		if (isFileDirty) {
+		if (isFileDirty()) {
 			SaveDirtyConfirmDialog warningDialog = new SaveDirtyConfirmDialog(MainWindow.getInstance().getShell());
 			warningDialog.open();
 			
@@ -122,15 +124,20 @@ public class FileEventHandler {
 	}
 	
 	public static void resetPaths() {
-		setLastFileLocation(lastFileName = null);
+		setLastFileLocation(null);
+		setLastFileName(null);
 	}
 	
 	public static void setDirtyStatus(boolean isDirty) {
-		isFileDirty = isDirty;
+		fileDirty = isDirty;
 		// If we reset the dirty status (save/load/new Adventure), fetch the current state for future comparison
 		if (!isDirty) setLastFileSavedState(MementoManager.getInstance().getcurrentState());
 		
 		MainWindow.getInstance().showFileDirtyStatus(isDirty);
+	}
+	
+	public static boolean isFileDirty() {
+		return fileDirty;
 	}
 
 	public static String getLastFileLocation() {
@@ -139,6 +146,14 @@ public class FileEventHandler {
 
 	public static void setLastFileLocation(String lastFileLocation) {
 		FileEventHandler.lastFileLocation = lastFileLocation;
+	}
+	
+	public static String getLastFileName() {
+		return lastFileName;
+	}
+	
+	public static void setLastFileName(String lastFileName) {
+		FileEventHandler.lastFileName = lastFileName;
 	}
 
 	public static Operation getOperationState() {
