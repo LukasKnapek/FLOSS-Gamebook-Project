@@ -13,10 +13,11 @@ import mabufudyne.gbdesigner.gui.MainWindow;
  */
 public class FileEventHandler {
 	
-	public static String lastFileLocation;
-	public static String lastFileName;
-	public static boolean isFileDirty;
-	public static Operation operationState;
+	private static String lastFileLocation;
+	private static String lastFileName;
+	private static boolean isFileDirty;
+	private static Operation operationState;
+	private static Memento lastFileSavedState;
 	
 	/**
 	 * Saves the current Adventure as an *.adv file to the location given by user in selection dialog
@@ -24,8 +25,8 @@ public class FileEventHandler {
 	 */
 	public static boolean saveAdventure(boolean quickSave) {
 		String savePath = "";
-		if (quickSave) savePath = lastFileLocation + lastFileName;
-		else savePath = MainWindow.getInstance().invokeSaveDialog(lastFileLocation);
+		if (quickSave) savePath = getLastFileLocation() + lastFileName;
+		else savePath = MainWindow.getInstance().invokeSaveDialog(getLastFileLocation());
 
 		if (savePath != null) {
 			try {
@@ -35,14 +36,14 @@ public class FileEventHandler {
 				out.close();
 				fOut.close();
 				
-				lastFileLocation = savePath.substring(0, savePath.lastIndexOf(File.separator));
+				setLastFileLocation(savePath.substring(0, savePath.lastIndexOf(File.separator)));
 				lastFileName = savePath.substring(savePath.lastIndexOf(File.separator));
 				
-				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + lastFileLocation);
+				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + getLastFileLocation());
 				MainWindow.getInstance().buttonCheck();
 				setDirtyStatus(false);
 				
-				System.out.println("Saved to: " + lastFileLocation + lastFileName);
+				System.out.println("Saved to: " + getLastFileLocation() + lastFileName);
 				
 				return true;
 
@@ -62,7 +63,7 @@ public class FileEventHandler {
 		boolean canLoad = checkForUnsavedFileChanges();
 		if (!canLoad) return false;
 
-		String loadPath = MainWindow.getInstance().invokeLoadDialog(lastFileLocation);
+		String loadPath = MainWindow.getInstance().invokeLoadDialog(getLastFileLocation());
 		if (loadPath != null) {
 			try {
 				FileInputStream fIn = new FileInputStream(loadPath);
@@ -80,12 +81,12 @@ public class FileEventHandler {
 				MementoManager.getInstance().revertToDefault();
 				StoryPieceEventHandler.handleActionAftermath(true, true);
 				
-				lastFileLocation = loadPath.substring(0, loadPath.lastIndexOf(File.separator));
+				setLastFileLocation(loadPath.substring(0, loadPath.lastIndexOf(File.separator)));
 				lastFileName = loadPath.substring(loadPath.lastIndexOf(File.separator));
 
-				System.out.println("Loaded from: " + lastFileLocation + lastFileName);
+				System.out.println("Loaded from: " + getLastFileLocation() + lastFileName);
 				
-				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + lastFileLocation);
+				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + getLastFileLocation());
 				MainWindow.getInstance().buttonCheck();
 				setDirtyStatus(false);
 				
@@ -104,7 +105,7 @@ public class FileEventHandler {
 			SaveDirtyConfirmDialog warningDialog = new SaveDirtyConfirmDialog(MainWindow.getInstance().getShell());
 			warningDialog.open();
 			
-			switch (operationState) {
+			switch (getOperationState()) {
 				case SAVE:
 					boolean saveSuccess = saveAdventure(false);
 					if (saveSuccess) return true;
@@ -121,12 +122,39 @@ public class FileEventHandler {
 	}
 	
 	public static void resetPaths() {
-		lastFileLocation = lastFileName = null;
+		setLastFileLocation(lastFileName = null);
 	}
 	
 	public static void setDirtyStatus(boolean isDirty) {
 		isFileDirty = isDirty;
+		// If we reset the dirty status (save/load/new Adventure), fetch the current state for future comparison
+		if (!isDirty) setLastFileSavedState(MementoManager.getInstance().getcurrentState());
+		
 		MainWindow.getInstance().showFileDirtyStatus(isDirty);
+	}
+
+	public static String getLastFileLocation() {
+		return lastFileLocation;
+	}
+
+	public static void setLastFileLocation(String lastFileLocation) {
+		FileEventHandler.lastFileLocation = lastFileLocation;
+	}
+
+	public static Operation getOperationState() {
+		return operationState;
+	}
+
+	public static void setOperationState(Operation operationState) {
+		FileEventHandler.operationState = operationState;
+	}
+
+	public static Memento getLastFileSavedState() {
+		return lastFileSavedState;
+	}
+
+	public static void setLastFileSavedState(Memento lastSavedState) {
+		FileEventHandler.lastFileSavedState = lastSavedState;
 	}
 
 }

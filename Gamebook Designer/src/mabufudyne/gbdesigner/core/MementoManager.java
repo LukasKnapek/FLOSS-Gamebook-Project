@@ -27,6 +27,10 @@ public class MementoManager {
 		return history.get(currentStatePosition);
 	}
 	
+	public Memento getcurrentState() {
+		return history.get(currentStatePosition);
+	}
+	
 	public static MementoManager getInstance() {
 		return instance;
 	}
@@ -49,7 +53,6 @@ public class MementoManager {
 			currentStatePosition++;
 		}
 		history.add(newState);
-
 	}
 
 	/**

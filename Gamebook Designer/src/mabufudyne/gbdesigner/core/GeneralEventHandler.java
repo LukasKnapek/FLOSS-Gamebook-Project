@@ -44,6 +44,8 @@ public class GeneralEventHandler {
 	public static void redo() {
 		Memento lastState = MementoManager.getInstance().getNextState();
 		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
+		// If our app state is different from the initial one by having performed a redo, enable the dirty file indicator
+		if (lastState != FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(true);
 		MainWindow.getInstance().reloadUI();
 	}
 	
@@ -53,6 +55,8 @@ public class GeneralEventHandler {
 	public static void undo() {
 		Memento lastState = MementoManager.getInstance().getPreviousState();
 		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
+		// If we undoed to the state which is identical to the one we last saved/loaded/created anew, reset dirty file indicator
+		if (lastState == FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(false);
 		MainWindow.getInstance().reloadUI();
 	}
 

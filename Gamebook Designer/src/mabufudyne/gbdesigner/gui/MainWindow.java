@@ -560,7 +560,7 @@ public class MainWindow {
 			textChoiceText.setText("");
 		}
 		
-		tItemQuickSave.setEnabled(FileEventHandler.lastFileLocation != null);
+		tItemQuickSave.setEnabled(FileEventHandler.getLastFileLocation() != null);
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
 		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
 		

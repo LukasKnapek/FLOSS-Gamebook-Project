@@ -74,7 +74,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.operationState = Operation.CANCEL;
+				FileEventHandler.setOperationState(Operation.CANCEL);
 				shlUnsavedChanges.close();
 			}
 		});
@@ -87,7 +87,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnDiscard.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.operationState = Operation.DISCARD;
+				FileEventHandler.setOperationState(Operation.DISCARD);
 				shlUnsavedChanges.close();
 			}
 		});
@@ -100,7 +100,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.operationState = Operation.SAVE;
+				FileEventHandler.setOperationState(Operation.SAVE);
 				shlUnsavedChanges.close();
 			}
 		});
