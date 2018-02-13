@@ -41,6 +41,9 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.layout.FillLayout;
 
 public class MainWindow {
 
@@ -138,10 +141,14 @@ public class MainWindow {
 		shlGamebookDesigner.setLayout(gl_shlGamebookDesigner);
 		
 		
-		ToolBar mainToolBar = new ToolBar(shlGamebookDesigner, SWT.BORDER | SWT.FLAT | SWT.RIGHT);
-		mainToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		ToolBar mainToolBar = new ToolBar(shlGamebookDesigner, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
+		GridData gd_mainToolBar = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		gd_mainToolBar.widthHint = 482;
+		mainToolBar.setLayoutData(gd_mainToolBar);
 		
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
+		tItemNew.setWidth(20);
+		tItemNew.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoNewFile.png"));
 		tItemNew.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -149,21 +156,20 @@ public class MainWindow {
 			}
 		});
 		tItemNew.setToolTipText("Create a new Adventure");
-		tItemNew.setWidth(35);
-		tItemNew.setText("New");
 		
 		tItemQuickSave = new ToolItem(mainToolBar, SWT.NONE);
+		tItemQuickSave.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoQuickSaveFile.png"));
 		tItemQuickSave.setToolTipText("Save to the last loaded/saved file");
-		tItemQuickSave.setWidth(35);
+		tItemQuickSave.setWidth(20);
 		tItemQuickSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileEventHandler.saveAdventure(true);
 			}
 		});
-		tItemQuickSave.setText("Save");
 		
 		ToolItem tltmSaveAs = new ToolItem(mainToolBar, SWT.NONE);
+		tltmSaveAs.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoSaveAs.png"));
 		tltmSaveAs.setToolTipText("Save as a new file");
 		tltmSaveAs.setWidth(35);
 		tltmSaveAs.addSelectionListener(new SelectionAdapter() {
@@ -172,9 +178,9 @@ public class MainWindow {
 				FileEventHandler.saveAdventure(false);
 			}
 		});
-		tltmSaveAs.setText("Save As");
 		
 		ToolItem tltmLoad = new ToolItem(mainToolBar, SWT.NONE);
+		tltmLoad.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoLoadFile.png"));
 		tltmLoad.setToolTipText("Load Adventure from a file");
 		tltmLoad.setWidth(35);
 		tltmLoad.addSelectionListener(new SelectionAdapter() {
@@ -183,9 +189,9 @@ public class MainWindow {
 				FileEventHandler.loadAdventure();
 			}
 		});
-		tltmLoad.setText("Load");
 		
 		tItemUndo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemUndo.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoUndo.png"));
 		tItemUndo.setToolTipText("Undo action");
 		tItemUndo.setWidth(35);
 		tItemUndo.addSelectionListener(new SelectionAdapter() {
@@ -195,9 +201,9 @@ public class MainWindow {
 				buttonCheck();
 			}
 		});
-		tItemUndo.setText("Undo");
 		
 		tItemRedo = new ToolItem(mainToolBar, SWT.NONE);
+		tItemRedo.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRedo.png"));
 		tItemRedo.setToolTipText("Redo action");
 		tItemRedo.setWidth(35);
 		tItemRedo.setSelection(true);
@@ -208,9 +214,9 @@ public class MainWindow {
 				buttonCheck();
 			}
 		});
-		tItemRedo.setText("Redo");
 		
 		ToolItem tItemExport = new ToolItem(mainToolBar, SWT.NONE);
+		tItemExport.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoExportToHTML.png"));
 		tItemExport.setToolTipText("Export Adventure to an HTML file");
 		tItemExport.setWidth(35);
 		tItemExport.addSelectionListener(new SelectionAdapter() {
@@ -219,7 +225,6 @@ public class MainWindow {
 				GeneralEventHandler.exportAdventure();
 			}
 		});
-		tItemExport.setText("Export");
 		
 		Label hlineToolBar = new Label(shlGamebookDesigner, SWT.SEPARATOR | SWT.HORIZONTAL);
 		hlineToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -332,6 +337,7 @@ public class MainWindow {
 		choiceToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemAddChoice.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoAdd.png"));
 		tItemAddChoice.setToolTipText("Add a new choice");
 		tItemAddChoice.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -339,9 +345,9 @@ public class MainWindow {
 				GeneralEventHandler.displayChoiceSelectionWindow();
 			}
 		});
-		tItemAddChoice.setText("+");
 		
 		tItemRemoveChoice = new ToolItem(choiceToolBar, SWT.NONE);
+		tItemRemoveChoice.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRemove.png"));
 		tItemRemoveChoice.setToolTipText("Remove the selected choice");
 		tItemRemoveChoice.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -351,7 +357,6 @@ public class MainWindow {
 				StoryPieceEventHandler.removeChoice(choice, choiceIndex);
 			}
 		});
-		tItemRemoveChoice.setText("-");
 		
 		Label lblNewLabel_2 = new Label(cChoices, SWT.NONE);
 		lblNewLabel_2.setText("Choice Text");
@@ -360,6 +365,7 @@ public class MainWindow {
 		textChoiceText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		btnSaveChoiceText = new Button(cChoices, SWT.NONE);
+		btnSaveChoiceText.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoQuickSaveFile.png"));
 		btnSaveChoiceText.setToolTipText("Save as the current choice text");
 		btnSaveChoiceText.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -370,7 +376,6 @@ public class MainWindow {
 				tableChoices.select(tableChoices.getSelectionIndex());
 			}
 		});
-		btnSaveChoiceText.setText("Save");
 		sashFields.setWeights(new int[] {1, 3, 3});
 		
 		Composite cViews = new Composite(sashMain, SWT.NONE);
@@ -444,6 +449,7 @@ public class MainWindow {
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemAddStoryPiece.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoAdd.png"));
 		tItemAddStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -453,9 +459,9 @@ public class MainWindow {
 			}
 		});
 		tItemAddStoryPiece.setToolTipText("Create a new StoryPiece");
-		tItemAddStoryPiece.setText("+");
 		
 		tItemRemoveStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRemoveStoryPiece.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRemove.png"));
 		tItemRemoveStoryPiece.setToolTipText("Remove the selected StoryPiece");
 		tItemRemoveStoryPiece.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -466,9 +472,9 @@ public class MainWindow {
 				}
 			}
 		});
-		tItemRemoveStoryPiece.setText("-");
 		
 		ToolItem tItemRandomize = new ToolItem(sideToolBar, SWT.NONE);
+		tItemRandomize.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRandomize.png"));
 		tItemRandomize.setToolTipText("Randomize StoryPiece order (except for fixed StoryPieces)");
 		tItemRandomize.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -476,9 +482,9 @@ public class MainWindow {
 				StoryPieceEventHandler.randomizeStoryPieceOrder();
 			}
 		});
-		tItemRandomize.setText("R");
 		
 		ToolItem tItemSort = new ToolItem(sideToolBar, SWT.NONE);
+		tItemSort.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoSortAscending.png"));
 		tItemSort.setToolTipText("Sort StoryPieces by order");
 		tItemSort.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -486,7 +492,6 @@ public class MainWindow {
 				StoryPieceEventHandler.sortStoryPieces();
 			}
 		});
-		tItemSort.setText("S");
 		sashMain.setWeights(new int[] {2, 1});
 		
 		Label hlineStatusBar = new Label(shlGamebookDesigner, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -721,7 +726,6 @@ public class MainWindow {
 		};
 		if (!statusUpdateChecking) display.timerExec(500, statusBarCleanTimer);
 	}
-
 }
 
 
