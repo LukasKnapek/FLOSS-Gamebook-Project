@@ -3,6 +3,8 @@ package mabufudyne.gbdesigner.core;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
+import mabufudyne.gbdesigner.gui.MainWindow;
+
 /**
  * This class is used to export an Adventure to an output file (HTML)
  */
@@ -42,7 +44,9 @@ public class ExportManager {
 				BufferedWriter writer = new BufferedWriter(new FileWriter(exportPath));
 				writer.write(this.HTMLContents.toString());
 				writer.close();
+				MainWindow.getInstance().showStatusMessage(Status.INFO, "Adventure successfully exported to: " + exportPath);
 			} catch (Exception e) {
+				MainWindow.getInstance().showStatusMessage(Status.ERROR, "Error while exporting Adventure: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}

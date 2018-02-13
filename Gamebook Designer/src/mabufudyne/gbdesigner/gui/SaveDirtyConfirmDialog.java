@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import mabufudyne.gbdesigner.core.FileEventHandler;
-import mabufudyne.gbdesigner.core.Operation;
+import mabufudyne.gbdesigner.core.Status;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -74,7 +74,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.setOperationState(Operation.CANCEL);
+				FileEventHandler.setOperationState(Status.CANCEL);
 				shlUnsavedChanges.close();
 			}
 		});
@@ -87,7 +87,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnDiscard.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.setOperationState(Operation.DISCARD);
+				FileEventHandler.setOperationState(Status.DISCARD);
 				shlUnsavedChanges.close();
 			}
 		});
@@ -100,7 +100,7 @@ public class SaveDirtyConfirmDialog extends Dialog {
 		btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileEventHandler.setOperationState(Operation.SAVE);
+				FileEventHandler.setOperationState(Status.SAVE);
 				shlUnsavedChanges.close();
 			}
 		});

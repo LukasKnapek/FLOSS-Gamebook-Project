@@ -16,7 +16,7 @@ public class FileEventHandler {
 	private static String lastFileLocation;
 	private static String lastFileName;
 	private static boolean fileDirty;
-	private static Operation operationState;
+	private static Status operationState;
 	private static Memento lastFileSavedState;
 	
 	/**
@@ -43,13 +43,13 @@ public class FileEventHandler {
 				
 				MainWindow.getInstance().changeApplicationTitle(getLastFileName().substring(1) + " - " + getLastFileLocation());
 				MainWindow.getInstance().buttonCheck();
+				MainWindow.getInstance().showStatusMessage(Status.INFO, "Adventure successfully saved as: " + getLastFileLocation() + getLastFileName());
 				setDirtyStatus(false);
-				
-				System.out.println("Saved to: " + getLastFileLocation() + getLastFileName());
 				
 				return true;
 
 			} catch (Exception e) {
+				MainWindow.getInstance().showStatusMessage(Status.ERROR, "Error while saving Adventure: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -84,17 +84,18 @@ public class FileEventHandler {
 				StoryPieceEventHandler.handleActionAftermath(true, true);
 				
 				setLastFileLocation(loadPath.substring(0, loadPath.lastIndexOf(File.separator)));
-				lastFileName = loadPath.substring(loadPath.lastIndexOf(File.separator));
-
-				System.out.println("Loaded from: " + getLastFileLocation() + lastFileName);
+				setLastFileName(loadPath.substring(loadPath.lastIndexOf(File.separator)));
 				
 				MainWindow.getInstance().changeApplicationTitle(lastFileName.substring(1) + " - " + getLastFileLocation());
 				MainWindow.getInstance().buttonCheck();
+				MainWindow.getInstance().showStatusMessage(Status.INFO, "Adventure successfully loaded from: " + getLastFileLocation() + getLastFileName());
+
 				setDirtyStatus(false);
 				
 				return true;
 	
 			} catch (Exception e) {
+				MainWindow.getInstance().showStatusMessage(Status.ERROR, "Error while loading Adventure: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -156,11 +157,11 @@ public class FileEventHandler {
 		FileEventHandler.lastFileName = lastFileName;
 	}
 
-	public static Operation getOperationState() {
+	public static Status getOperationState() {
 		return operationState;
 	}
 
-	public static void setOperationState(Operation operationState) {
+	public static void setOperationState(Status operationState) {
 		FileEventHandler.operationState = operationState;
 	}
 

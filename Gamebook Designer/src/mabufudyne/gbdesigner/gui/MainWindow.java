@@ -27,6 +27,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import mabufudyne.gbdesigner.core.GeneralEventHandler;
 import mabufudyne.gbdesigner.core.FileEventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
+import mabufudyne.gbdesigner.core.Status;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
@@ -66,6 +67,10 @@ public class MainWindow {
 	private TableColumn tColOrder;
 	private TableColumn tColTitle;
 	private TableColumn tColChoiceText; 
+	private Label lblStatusIcon;
+	private Label lblStatusMessage;
+	private long lastStatusUpdateTime;
+	private boolean statusUpdateChecking = false;
 
 	/**
 	 * Launch the application.
@@ -82,6 +87,10 @@ public class MainWindow {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Shell getShell() {
+		return shlGamebookDesigner;
 	}
 
 	/**
@@ -124,10 +133,12 @@ public class MainWindow {
 		shlGamebookDesigner.setMinimumSize(new Point(700, 550));
 		shlGamebookDesigner.setSize(450, 300);
 		shlGamebookDesigner.setText("Gamebook Designer");
-		shlGamebookDesigner.setLayout(new GridLayout(1, false));
+		GridLayout gl_shlGamebookDesigner = new GridLayout(1, false);
+		gl_shlGamebookDesigner.verticalSpacing = 0;
+		shlGamebookDesigner.setLayout(gl_shlGamebookDesigner);
 		
 		
-		ToolBar mainToolBar = new ToolBar(shlGamebookDesigner, SWT.FLAT | SWT.RIGHT);
+		ToolBar mainToolBar = new ToolBar(shlGamebookDesigner, SWT.BORDER | SWT.FLAT | SWT.RIGHT);
 		mainToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		ToolItem tItemNew = new ToolItem(mainToolBar, SWT.NONE);
@@ -209,6 +220,9 @@ public class MainWindow {
 			}
 		});
 		tItemExport.setText("Export");
+		
+		Label hlineToolBar = new Label(shlGamebookDesigner, SWT.SEPARATOR | SWT.HORIZONTAL);
+		hlineToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		SashForm sashMain = new SashForm(shlGamebookDesigner, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -474,6 +488,36 @@ public class MainWindow {
 		});
 		tItemSort.setText("S");
 		sashMain.setWeights(new int[] {2, 1});
+		
+		Label hlineStatusBar = new Label(shlGamebookDesigner, SWT.SEPARATOR | SWT.HORIZONTAL);
+		hlineStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Composite statusBar = new Composite(shlGamebookDesigner, SWT.NONE);
+		GridData gd_statusBar = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_statusBar.minimumHeight = 25;
+		gd_statusBar.heightHint = 25;
+		statusBar.setLayoutData(gd_statusBar);
+		GridLayout gl_statusBar = new GridLayout(2, false);
+		gl_statusBar.marginTop = 3;
+		gl_statusBar.marginHeight = 0;
+		gl_statusBar.verticalSpacing = 0;
+		statusBar.setLayout(gl_statusBar);
+		
+		lblStatusIcon = new Label(statusBar, SWT.NONE);
+		GridData gd_lblStatusIcon = new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1);
+		gd_lblStatusIcon.heightHint = 30;
+		gd_lblStatusIcon.widthHint = 30;
+		gd_lblStatusIcon.minimumWidth = 30;
+		lblStatusIcon.setLayoutData(gd_lblStatusIcon);
+		
+		lblStatusMessage = new Label(statusBar, SWT.WRAP);
+		GridData gd_lblStatusMessage = new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1);
+		gd_lblStatusMessage.widthHint = 600;
+		gd_lblStatusMessage.minimumWidth = -1;
+		lblStatusMessage.setLayoutData(gd_lblStatusMessage);
+		lblStatusMessage.setBounds(0, 0, 68, 17);
+		
+		lastStatusUpdateTime = System.currentTimeMillis();
 
 	}
 
@@ -650,10 +694,34 @@ public class MainWindow {
 		String appTitle = shlGamebookDesigner.getText().replace("*", "");
 		shlGamebookDesigner.setText(isDirty ? "*" + appTitle : appTitle);
 	}
-
-	public Shell getShell() {
-		return shlGamebookDesigner;
+	
+	public void showStatusMessage(Status messageStatus, String messageText) {	
+		lastStatusUpdateTime = System.currentTimeMillis();
+		switch (messageStatus) {
+			case INFO: lblStatusIcon.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoStatusInfo.png")); break;
+			case WARNING: lblStatusIcon.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoStatusWarning.png")); break;
+			case ERROR: lblStatusIcon.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoStatusError.png")); break;
+		}
+		lblStatusMessage.setText(messageText);
+		
+		// Clear the Status Bar approximately 5 seconds from when the last status message was shown
+		Runnable statusBarCleanTimer = new Runnable( ) {
+			public void	run() {
+				if (System.currentTimeMillis() - lastStatusUpdateTime > 5000) {
+					lblStatusIcon.setImage(null);
+					lblStatusMessage.setText("");
+					display.timerExec(-1, this);
+					statusUpdateChecking = false;
+				}
+				else {
+					display.timerExec(500, this);
+					statusUpdateChecking = true;
+				}
+			}
+		};
+		if (!statusUpdateChecking) display.timerExec(500, statusBarCleanTimer);
 	}
+
 }
 
 

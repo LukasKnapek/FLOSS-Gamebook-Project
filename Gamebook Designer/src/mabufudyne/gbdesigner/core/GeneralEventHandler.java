@@ -47,6 +47,7 @@ public class GeneralEventHandler {
 		// If our app state is different from the initial one by having performed a redo, enable the dirty file indicator
 		if (lastState != FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(true);
 		MainWindow.getInstance().reloadUI();
+		MainWindow.getInstance().showStatusMessage(Status.INFO, "Redo");
 	}
 	
 	/**
@@ -58,6 +59,7 @@ public class GeneralEventHandler {
 		// If we undoed to the state which is identical to the one we last saved/loaded/created anew, reset dirty file indicator
 		if (lastState == FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(false);
 		MainWindow.getInstance().reloadUI();
+		MainWindow.getInstance().showStatusMessage(Status.INFO, "Undo");
 	}
 
 	/**
@@ -75,6 +77,8 @@ public class GeneralEventHandler {
 		performInitialSetup();
 		MainWindow.getInstance().reloadUI();
 		MainWindow.getInstance().buttonCheck();
+		MainWindow.getInstance().showStatusMessage(Status.INFO, "Created a new Adventure");
+
 	}
 
 }
