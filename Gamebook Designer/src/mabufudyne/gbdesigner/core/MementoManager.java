@@ -39,8 +39,8 @@ public class MementoManager {
 	 * Creates a new state (Memento instance) and stores it in the history (Memento collection).
 	 * If the redo option was available and the user instead performed a new action, cuts off all the possible redo states.
 	 */
-	public void saveState() {
-		Memento newState = new Memento();
+	public void saveState(String actionDescription) {
+		Memento newState = new Memento(actionDescription);
 		
 		// If the history is empty, do nothing here
 		if (history.size() == 0) { }

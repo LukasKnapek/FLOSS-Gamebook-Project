@@ -26,8 +26,9 @@ public class GeneralEventHandler {
 	public static void displayChoiceSelectionWindow() {
 		ChoiceWindow.getInstance().open();
 		// Update active SP in view (we might have added choices)
-		MainWindow.getInstance().displayStoryPieceContents(StoryPieceManager.getInstance().getActiveStoryPiece(), 0);
-		StoryPieceEventHandler.handleActionAftermath(true, true);
+		StoryPiece activeSP = StoryPieceManager.getInstance().getActiveStoryPiece();
+		MainWindow.getInstance().displayStoryPieceContents(activeSP, 0);
+		StoryPieceEventHandler.handleActionAftermath(true, "Added choices to StoryPiece: " + activeSP.getTitle(), true);
 	}
 	
 	/**
@@ -43,11 +44,12 @@ public class GeneralEventHandler {
 	 */
 	public static void redo() {
 		Memento lastState = MementoManager.getInstance().getNextState();
+		String lastStateAction = lastState.getActionDescription();
 		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
 		// If our app state is different from the initial one by having performed a redo, enable the dirty file indicator
 		if (lastState != FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(true);
 		MainWindow.getInstance().reloadUI();
-		MainWindow.getInstance().showStatusMessage(Status.INFO, "Redo");
+		MainWindow.getInstance().showStatusMessage(Status.INFO, "Redo - " + lastStateAction);
 	}
 	
 	/**
@@ -55,11 +57,12 @@ public class GeneralEventHandler {
 	 */
 	public static void undo() {
 		Memento lastState = MementoManager.getInstance().getPreviousState();
+		String lastStateAction = lastState.getActionDescription();
 		StoryPieceManager.replaceManager((StoryPieceManager) Utils.deepCopyObject(lastState.getManagerMemento()));
 		// If we undoed to the state which is identical to the one we last saved/loaded/created anew, reset dirty file indicator
 		if (lastState == FileEventHandler.getLastFileSavedState()) FileEventHandler.setDirtyStatus(false);
 		MainWindow.getInstance().reloadUI();
-		MainWindow.getInstance().showStatusMessage(Status.INFO, "Undo");
+		MainWindow.getInstance().showStatusMessage(Status.INFO, "Undo - " + lastStateAction);
 	}
 
 	/**

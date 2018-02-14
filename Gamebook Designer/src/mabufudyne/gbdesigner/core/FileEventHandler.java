@@ -81,7 +81,7 @@ public class FileEventHandler {
 				}
 				
 				MementoManager.getInstance().revertToDefault();
-				StoryPieceEventHandler.handleActionAftermath(true, true);
+				StoryPieceEventHandler.handleActionAftermath(true, "Loaded Adventure", true);
 				
 				setLastFileLocation(loadPath.substring(0, loadPath.lastIndexOf(File.separator)));
 				setLastFileName(loadPath.substring(loadPath.lastIndexOf(File.separator)));
