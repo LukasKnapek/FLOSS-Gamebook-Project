@@ -68,7 +68,7 @@ public class ExportManager {
 	}
 	
 	private void addAdventureTitle() {
-		this.HTMLContents.append("\n<h1>New Adventure</h1>\n");
+		this.HTMLContents.append("\n<h1>" + Settings.getInstance().getAdventureTitle() + "</h1>\n");
 		addNewLines(2);
 	}
 	
@@ -89,7 +89,8 @@ public class ExportManager {
 			
 			for (StoryPiece choice : sp.getChoicesTexts().keySet()) {
 				String choiceText = sp.getChoicesTexts().get(choice);
-				this.HTMLContents.append(String.format("%s ... <i><a href=#%s>%s</a></i>", choiceText, choice.getOrder(), choice.getOrder()));
+				this.HTMLContents.append(String.format("%s %s <i><a href=#%s>%s</a></i>", choiceText, Settings.getInstance().getChoiceNumberSeparator(),
+						choice.getOrder(), choice.getOrder()));
 				addNewLines(1);
 			}
 			addNewLines(1);

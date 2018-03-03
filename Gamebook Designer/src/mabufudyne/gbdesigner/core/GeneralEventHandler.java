@@ -1,5 +1,7 @@
 package mabufudyne.gbdesigner.core;
 
+import java.util.HashMap;
+
 import mabufudyne.gbdesigner.gui.ChoiceWindow;
 import mabufudyne.gbdesigner.gui.MainWindow;
 
@@ -13,6 +15,7 @@ public class GeneralEventHandler {
 	 * 1) Creates a new StoryPiece (as there must be at least one at all times)
 	 */
 	public static void performInitialSetup() {
+		FileEventHandler.loadSettingsFromFile();
 		MainWindow.getInstance().changeApplicationTitle("Unnamed Adventure");
 		StoryPieceEventHandler.createNewStoryPieceAndActivate();
 		// New Adventure should not be considered a modified file
@@ -82,6 +85,17 @@ public class GeneralEventHandler {
 		MainWindow.getInstance().buttonCheck();
 		MainWindow.getInstance().showStatusMessage(Status.INFO, "Created a new Adventure");
 
+	}
+	
+	public static void saveSettings(HashMap<String, String> settings) {
+		Settings currentSettings = Settings.getInstance();
+		
+		currentSettings.setAdventureTitle(settings.get("Adventure title"));
+		currentSettings.setChoiceNumberSeparator(settings.get("Choice number separator"));
+		currentSettings.setDefaultChoiceText(settings.get("Choice text"));
+		currentSettings.setStatusMessageTimeout(Integer.valueOf(settings.get("Status timeout")));
+		currentSettings.setDefaultStoryPieceName(settings.get("StoryPiece title"));
+		
 	}
 
 }

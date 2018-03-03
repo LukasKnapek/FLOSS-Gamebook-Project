@@ -17,7 +17,7 @@ public class StoryPiece implements Serializable, Comparable<Object> {
 	/* Constructors */
 	
 	public StoryPiece() {
-		this.title = "Untitled";
+		this.title = Settings.getInstance().getDefaultStoryPieceName();
 		this.story = "";
 		this.order = StoryPieceManager.getInstance().getNextAvailableOrder();
 		this.fixedOrder = false;
@@ -55,7 +55,7 @@ public class StoryPiece implements Serializable, Comparable<Object> {
 	}
 
 	public void addChoice(StoryPiece sp) {
-		this.choicesTexts.put(sp, "Go to");
+		this.choicesTexts.put(sp, Settings.getInstance().getDefaultChoiceText());
 	}
 
 	public void removeChoice(StoryPiece sp) {

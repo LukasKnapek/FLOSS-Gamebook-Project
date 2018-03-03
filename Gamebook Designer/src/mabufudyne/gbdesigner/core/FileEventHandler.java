@@ -124,6 +124,41 @@ public class FileEventHandler {
 		else return true;
 	}
 	
+	public static void saveSettingsToFile() {
+		Settings currentSettings = Settings.getInstance();
+		String savePath = System.getProperty("user.dir") + File.separator + "settings.gbd";
+		
+		try {
+			FileOutputStream fOut = new FileOutputStream(savePath);
+			ObjectOutputStream out = new ObjectOutputStream(fOut);
+			out.writeObject(currentSettings);
+			out.close();
+			fOut.close();
+			
+			MainWindow.getInstance().showStatusMessage(Status.INFO, "New settings saved and applied");
+		} catch (Exception e) {
+			MainWindow.getInstance().showStatusMessage(Status.ERROR, "Error while saving the new settings: " + e.getMessage());
+			e.printStackTrace();
+		}		
+	}
+	
+	
+	public static void loadSettingsFromFile() {
+		String loadPath = System.getProperty("user.dir") + File.separator + "settings.gbd";
+		
+		try {
+			FileInputStream fIn = new FileInputStream(loadPath);
+			ObjectInputStream in = new ObjectInputStream(fIn);
+			Settings loadedSettings = (Settings) in.readObject();
+			Settings.setInstance(loadedSettings);
+			MainWindow.getInstance().showStatusMessage(Status.INFO, "Existing settings found and applied");
+		}
+		catch (Exception e) {
+			MainWindow.getInstance().showStatusMessage(Status.WARNING, "Existing settings not found, applying default settings");
+			e.printStackTrace();
+		}
+	}
+	
 	public static void resetPaths() {
 		setLastFileLocation(null);
 		setLastFileName(null);
@@ -172,5 +207,7 @@ public class FileEventHandler {
 	public static void setLastFileSavedState(Memento lastSavedState) {
 		FileEventHandler.lastFileSavedState = lastSavedState;
 	}
+
+
 
 }

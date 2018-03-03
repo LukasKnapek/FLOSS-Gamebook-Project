@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -27,6 +26,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import mabufudyne.gbdesigner.core.GeneralEventHandler;
 import mabufudyne.gbdesigner.core.FileEventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
+import mabufudyne.gbdesigner.core.Settings;
 import mabufudyne.gbdesigner.core.Status;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
@@ -41,9 +41,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class MainWindow {
 
@@ -219,6 +218,19 @@ public class MainWindow {
 		tItemExport.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoExportToHTML.png"));
 		tItemExport.setToolTipText("Export Adventure to an HTML file");
 		tItemExport.setWidth(35);
+		
+		ToolItem tltmNewItem = new ToolItem(mainToolBar, SWT.SEPARATOR);
+		tltmNewItem.setText("New Item");
+		
+		ToolItem tltmNewItem_1 = new ToolItem(mainToolBar, SWT.NONE);
+		tltmNewItem_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SettingsDialog dialog = new SettingsDialog(shlGamebookDesigner, 0);
+				dialog.open();
+			}
+		});
+		tltmNewItem_1.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoSettings.png"));
 		tItemExport.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -297,6 +309,18 @@ public class MainWindow {
 		lblNewLabel.setText("Choices");
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoices.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				Object clickTarget = tableChoices.getItem(new Point(e.x, e.y));
+				// Did the user double-click a particular TableItem, or nothing?
+				if (clickTarget != null) {
+					TableItem clickedItem = (TableItem) clickTarget;
+					StoryPiece selectedChoice = (StoryPiece) clickedItem.getData();
+					StoryPieceEventHandler.changeActiveStoryPiece(selectedChoice, true);
+				}
+			}
+		});
 		tableChoices.setLinesVisible(true);
 		tableChoices.addControlListener(new ControlAdapter() {
 			@Override
@@ -702,6 +726,8 @@ public class MainWindow {
 	
 	public void showStatusMessage(Status messageStatus, String messageText) {	
 		lastStatusUpdateTime = System.currentTimeMillis();
+		int statusTimeout = Settings.getInstance().getStatusMessageTimeout() * 1000; // miliseconds
+		
 		switch (messageStatus) {
 			case INFO: lblStatusIcon.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoStatusInfo.png")); break;
 			case WARNING: lblStatusIcon.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoStatusWarning.png")); break;
@@ -712,19 +738,19 @@ public class MainWindow {
 		// Clear the Status Bar approximately 5 seconds from when the last status message was shown
 		Runnable statusBarCleanTimer = new Runnable( ) {
 			public void	run() {
-				if (System.currentTimeMillis() - lastStatusUpdateTime > 5000) {
+				if (System.currentTimeMillis() - lastStatusUpdateTime > statusTimeout) {
 					lblStatusIcon.setImage(null);
 					lblStatusMessage.setText("");
 					display.timerExec(-1, this);
 					statusUpdateChecking = false;
 				}
 				else {
-					display.timerExec(500, this);
+					display.timerExec(statusTimeout, this);
 					statusUpdateChecking = true;
 				}
 			}
 		};
-		if (!statusUpdateChecking) display.timerExec(500, statusBarCleanTimer);
+		if (!statusUpdateChecking) display.timerExec(statusTimeout, statusBarCleanTimer);
 	}
 }
 
