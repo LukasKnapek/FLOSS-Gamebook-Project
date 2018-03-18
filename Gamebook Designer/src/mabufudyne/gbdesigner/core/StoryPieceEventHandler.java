@@ -1,5 +1,6 @@
 package mabufudyne.gbdesigner.core;
 
+import mabufudyne.gbdesigner.gui.CanvasPainter;
 import mabufudyne.gbdesigner.gui.ChoiceWindow;
 import mabufudyne.gbdesigner.gui.MainWindow;
 

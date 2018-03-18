@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar" sourcepath="/usr/lib/eclipse/plugins/com.ibm.icu_59.1.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.linux64"/>
 	<classpathentry kind="lib" path="org.eclipse.nebula.widgets.grid_1.1.0.201711021145.jar" sourcepath="org.eclipse.nebula.widgets.grid.source_1.1.0.201711021145.jar"/>
+	<classpathentry kind="lib" path="org.eclipse.draw2d_3.10.100.201606061308.jar" sourcepath="org.eclipse.draw2d.source_3.10.100.201606061308.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

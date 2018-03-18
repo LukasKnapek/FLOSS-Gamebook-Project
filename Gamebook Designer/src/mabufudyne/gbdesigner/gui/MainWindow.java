@@ -1,20 +1,31 @@
 package mabufudyne.gbdesigner.gui;
 
-
 import org.eclipse.nebula.widgets.grid.Grid;
+import org.eclipse.nebula.widgets.grid.GridColumn;
+import org.eclipse.nebula.widgets.grid.GridItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -23,26 +34,19 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import mabufudyne.gbdesigner.core.GeneralEventHandler;
 import mabufudyne.gbdesigner.core.FileEventHandler;
+import mabufudyne.gbdesigner.core.GeneralEventHandler;
 import mabufudyne.gbdesigner.core.MementoManager;
 import mabufudyne.gbdesigner.core.Settings;
 import mabufudyne.gbdesigner.core.Status;
 import mabufudyne.gbdesigner.core.StoryPiece;
 import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
-import org.eclipse.nebula.widgets.grid.GridItem;
-import org.eclipse.nebula.widgets.grid.GridColumn;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+
+import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.PaintEvent;
 
 public class MainWindow {
 
@@ -72,7 +76,11 @@ public class MainWindow {
 	private Label lblStatusIcon;
 	private Label lblStatusMessage;
 	private long lastStatusUpdateTime;
+	
 	private boolean statusUpdateChecking = false;
+	private FigureCanvas canvas;
+	private Figure canvasRoot;
+	private XYLayout canvasLayout;
 
 	/**
 	 * Launch the application.
@@ -107,7 +115,6 @@ public class MainWindow {
 		
 		shlGamebookDesigner.open();
 		shlGamebookDesigner.layout();
-		
 		// WINDOWS: By default, mainToolBar has focus on launch, make it lose the focus
 		shlGamebookDesigner.forceFocus();
 		
@@ -132,7 +139,7 @@ public class MainWindow {
 			}
 		});
 		shlGamebookDesigner.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/appLogo_64x64.png"));
-		shlGamebookDesigner.setMinimumSize(new Point(700, 550));
+		shlGamebookDesigner.setMinimumSize(new Point(900, 550));
 		shlGamebookDesigner.setSize(450, 300);
 		shlGamebookDesigner.setText("Gamebook Designer");
 		GridLayout gl_shlGamebookDesigner = new GridLayout(1, false);
@@ -244,6 +251,56 @@ public class MainWindow {
 		SashForm sashMain = new SashForm(shlGamebookDesigner, SWT.NONE);
 		sashMain.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
+		Composite cLayout = new Composite(sashMain, SWT.NONE);
+		cLayout.setLayout(new GridLayout(2, false));
+				
+		ToolBar layoutToolBar = new ToolBar(cLayout, SWT.BORDER | SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+		layoutToolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 2));
+		
+		ToolItem tItemResetLocation = new ToolItem(layoutToolBar, SWT.NONE);
+		tItemResetLocation.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				canvasRoot.removeAll();
+				CanvasPainter.paintVisual(canvas, canvasRoot, canvasLayout);
+			}
+		});
+		tItemResetLocation.setToolTipText("Reset layout view");
+		tItemResetLocation.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRedo.png"));
+		
+		Label lblNewLabel_3 = new Label(cLayout, SWT.NONE);
+		lblNewLabel_3.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+		lblNewLabel_3.setText("Adventure Layout");
+		
+		canvas = new FigureCanvas(cLayout, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.NO_REDRAW_RESIZE);
+		canvas.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				canvasRoot.removeAll();
+				CanvasPainter.paintVisual(canvas, canvasRoot, canvasLayout);
+			}
+		});
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+
+			}
+		});
+		GridData gd_canvas = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd_canvas.minimumHeight = 300;
+		gd_canvas.minimumWidth = 150;
+		canvas.setLayoutData(gd_canvas);
+		canvas.setScrollBarVisibility(FigureCanvas.AUTOMATIC);
+
+		// Basic canvas configuration
+		canvasRoot = new Figure();
+		canvasLayout = new XYLayout();
+		canvasRoot.setLayoutManager(canvasLayout);
+		//canvasLayout.setSpacing(20);
+
+		canvas.getViewport().setContents(canvasRoot);	
+		LightweightSystem lws = new LightweightSystem(canvas);
+		lws.setContents(canvas.getViewport());
+
 		SashForm sashFields = new SashForm(sashMain, SWT.VERTICAL);
 		
 		Composite cTitle = new Composite(sashFields, SWT.NONE);
@@ -469,7 +526,7 @@ public class MainWindow {
 		gColFixed.setText("Fixed");
 		gColFixed.setWidth(50);
 		
-		ToolBar sideToolBar = new ToolBar(cViews, SWT.FLAT | SWT.VERTICAL);
+		ToolBar sideToolBar = new ToolBar(cViews, SWT.BORDER | SWT.FLAT | SWT.VERTICAL);
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);
@@ -516,7 +573,7 @@ public class MainWindow {
 				StoryPieceEventHandler.sortStoryPieces();
 			}
 		});
-		sashMain.setWeights(new int[] {2, 1});
+		sashMain.setWeights(new int[] {1, 2, 1});
 		
 		Label hlineStatusBar = new Label(shlGamebookDesigner, SWT.SEPARATOR | SWT.HORIZONTAL);
 		hlineStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -636,7 +693,6 @@ public class MainWindow {
 		tItemQuickSave.setEnabled(FileEventHandler.getLastFileLocation() != null);
 		tItemUndo.setEnabled(MementoManager.getInstance().canUndo());
 		tItemRedo.setEnabled(MementoManager.getInstance().canRedo());
-		
 	}
 
 	/** 
