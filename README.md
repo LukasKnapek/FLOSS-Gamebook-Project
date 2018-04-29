@@ -14,13 +14,13 @@ While working with the application, you my encounter the following terms:
 
 ### Screenshots
 
-![Adventure Designer on Linux](https://i.imgur.com/UN7Zesr.png | width=500)
+<img alt="Adventure Designer on Linux" src="https://i.imgur.com/UN7Zesr.png" width="800">
 
-![Adventure Designer on Windows](https://i.imgur.com/jB4EpEY.png | width=500)
+<img alt="Adventure Designer on Windows" src="https://i.imgur.com/jB4EpEY.png" width="800">
 
 You can export your Adventure as an HTML file which can be played straight away.
 
-![Adventure Designer on Windows](https://i.imgur.com/BCfP6bR.png | width=500)
+<img alt="A finished Adventure as an HTML file" border=2 src="https://i.imgur.com/BCfP6bR.png" width="800">
 
 ### Used technologies:
 - Language: Java 1.8
