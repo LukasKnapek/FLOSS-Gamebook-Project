@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Spinner;
 public class SettingsDialog extends Dialog {
 
 	protected Object result;
-	protected Shell shell;
+	protected Shell shlSettings;
 	private Text textAdventureTitle;
 	private Text textChoiceNumberSeparator;
 	private Text textStoryPieceTitle;
@@ -49,10 +49,10 @@ public class SettingsDialog extends Dialog {
 	public Object open() {
 		createContents();
 		populateFields();
-		shell.open();
-		shell.layout();
+		shlSettings.open();
+		shlSettings.layout();
 		Display display = getParent().getDisplay();
-		while (!shell.isDisposed()) {
+		while (!shlSettings.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -64,12 +64,12 @@ public class SettingsDialog extends Dialog {
 	 * Create contents of the dialog.
 	 */
 	private void createContents() {
-		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		shell.setSize(544, 317);
-		shell.setText(getText());
-		shell.setLayout(new GridLayout(1, false));
+		shlSettings = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		shlSettings.setSize(544, 317);
+		shlSettings.setText("Settings");
+		shlSettings.setLayout(new GridLayout(1, false));
 		
-		Group grpAdventure = new Group(shell, SWT.NONE);
+		Group grpAdventure = new Group(shlSettings, SWT.NONE);
 		GridLayout gl_grpAdventure = new GridLayout(2, false);
 		gl_grpAdventure.horizontalSpacing = 50;
 		grpAdventure.setLayout(gl_grpAdventure);
@@ -98,11 +98,11 @@ public class SettingsDialog extends Dialog {
 		spinStatusTimeout.setMaximum(300);
 		spinStatusTimeout.setMinimum(5);
 		
-		Group grpExport = new Group(shell, SWT.NONE);
+		Group grpExport = new Group(shlSettings, SWT.NONE);
 		GridLayout gl_grpExport = new GridLayout(2, false);
 		gl_grpExport.horizontalSpacing = 50;
 		grpExport.setLayout(gl_grpExport);
-		grpExport.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		grpExport.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		grpExport.setText("Export");
 		
 		Label lblNewLabel = new Label(grpExport, SWT.NONE);
@@ -112,15 +112,13 @@ public class SettingsDialog extends Dialog {
 		textAdventureTitle.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		Label lblNewLabel_1 = new Label(grpExport, SWT.NONE);
-		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
 		lblNewLabel_1.setText("Choice-Number Separator");
 		
 		textChoiceNumberSeparator = new Text(grpExport, SWT.BORDER);
-		GridData gd_textChoiceNumberSeparator = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_textChoiceNumberSeparator.heightHint = 14;
-		textChoiceNumberSeparator.setLayoutData(gd_textChoiceNumberSeparator);
+		textChoiceNumberSeparator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
-		Composite composite = new Composite(shell, SWT.NONE);
+		Composite composite = new Composite(shlSettings, SWT.NONE);
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		
@@ -140,7 +138,7 @@ public class SettingsDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				GeneralEventHandler.saveSettings(getFieldsContents());
 				FileEventHandler.saveSettingsToFile();
-				shell.dispose();
+				shlSettings.dispose();
 			}
 		});
 		btnApplyQuit.setText("Apply and Quit");
@@ -149,7 +147,7 @@ public class SettingsDialog extends Dialog {
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.dispose();
+				shlSettings.dispose();
 			}
 		});
 		btnCancel.setText("Cancel");

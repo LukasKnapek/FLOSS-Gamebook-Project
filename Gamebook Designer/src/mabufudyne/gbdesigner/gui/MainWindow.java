@@ -44,7 +44,6 @@ import mabufudyne.gbdesigner.core.StoryPieceEventHandler;
 import mabufudyne.gbdesigner.core.StoryPieceManager;
 
 import org.eclipse.draw2d.*;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.PaintEvent;
 
@@ -254,7 +253,7 @@ public class MainWindow {
 		Composite cLayout = new Composite(sashMain, SWT.NONE);
 		cLayout.setLayout(new GridLayout(2, false));
 				
-		ToolBar layoutToolBar = new ToolBar(cLayout, SWT.BORDER | SWT.FLAT | SWT.RIGHT | SWT.VERTICAL);
+		ToolBar layoutToolBar = new ToolBar(cLayout, SWT.RIGHT | SWT.VERTICAL);
 		layoutToolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 2));
 		
 		ToolItem tItemResetLocation = new ToolItem(layoutToolBar, SWT.NONE);
@@ -265,8 +264,8 @@ public class MainWindow {
 				CanvasPainter.paintVisual(canvas, canvasRoot, canvasLayout);
 			}
 		});
-		tItemResetLocation.setToolTipText("Reset layout view");
-		tItemResetLocation.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRedo.png"));
+		tItemResetLocation.setToolTipText("Refresh Layout Preview");
+		tItemResetLocation.setImage(SWTResourceManager.getImage(MainWindow.class, "/mabufudyne/gbdesigner/resources/icoRefreshLayout.png"));
 		
 		Label lblNewLabel_3 = new Label(cLayout, SWT.NONE);
 		lblNewLabel_3.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
@@ -366,6 +365,7 @@ public class MainWindow {
 		lblNewLabel.setText("Choices");
 		
 		tableChoices = new Table(cChoices, SWT.BORDER | SWT.FULL_SELECTION);
+		tableChoices.setLinesVisible(true);
 		tableChoices.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -378,7 +378,6 @@ public class MainWindow {
 				}
 			}
 		});
-		tableChoices.setLinesVisible(true);
 		tableChoices.addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
@@ -498,7 +497,6 @@ public class MainWindow {
 			}
 		});
 		gridStoryPieces.setRowsResizeable(true);
-		gridStoryPieces.setTreeLinesVisible(false);
 		gridStoryPieces.setHeaderVisible(true);
 		gridStoryPieces.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
@@ -526,7 +524,7 @@ public class MainWindow {
 		gColFixed.setText("Fixed");
 		gColFixed.setWidth(50);
 		
-		ToolBar sideToolBar = new ToolBar(cViews, SWT.BORDER | SWT.FLAT | SWT.VERTICAL);
+		ToolBar sideToolBar = new ToolBar(cViews, SWT.VERTICAL);
 		sideToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		
 		tItemAddStoryPiece = new ToolItem(sideToolBar, SWT.NONE);

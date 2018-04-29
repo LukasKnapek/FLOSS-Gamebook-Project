@@ -69,7 +69,6 @@ public class ExportManager {
 	
 	private void addAdventureTitle() {
 		this.HTMLContents.append("\n<h1>" + Settings.getInstance().getAdventureTitle() + "</h1>\n");
-		addNewLines(2);
 	}
 	
 	private void addNewLines(int count) {
@@ -80,7 +79,6 @@ public class ExportManager {
 	
 	private void listStoryPieces() {
 		StoryPieceManager.getInstance().sortStoryPieces();
-		//<a name="anchor"></a>
 		for (StoryPiece sp : StoryPieceManager.getInstance().getAllStoryPieces()) {
 			this.HTMLContents.append(String.format("<b><a name=\"%s\">%s.</a></b>", sp.getOrder(), sp.getOrder()));
 			addNewLines(1);
@@ -93,7 +91,10 @@ public class ExportManager {
 						choice.getOrder(), choice.getOrder()));
 				addNewLines(1);
 			}
-			addNewLines(1);
+			// Additional space after the list of choice
+			if (sp.getChoicesTexts().size() != 0) {
+				addNewLines(1);
+			}
 
 		}
 	}
